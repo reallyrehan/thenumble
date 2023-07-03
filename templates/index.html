@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+
+        <title>Numble - A Daily Math Game</title>
+        <meta http-equiv='content-language' content='en-us'>
+
+
+            <!-- FB Meta Tags -->
+            <meta property="og:url" content="https://www.thenumble.app/">
+            <meta property="og:type" content="website">
+            <meta property="og:title" content="Numble - A Daily Math Game">
+            <meta property="og:description" content="Guess the hidden equation in 6 tries. A new equation every day!">
+
+            <!-- Twitter Meta Tags
+            <meta name="twitter:card" content="summary_large_image">
+            <meta property="twitter:domain" content="thenumble.app"> -->
+
+
+
+
+
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+        <meta name="title" content = "Numble">
+        <meta name="description" content="Numble is a game like Wordle, but for math nerds. You guess an equation in 6 guesses or less, with a new equation every day!">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+
+        <!-- Google Adsense
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5543516549040967"
+        crossorigin="anonymous"></script> -->
+
+     
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-219109845-1"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-219109845-1');
+
+
+        </script>
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-G4SBFVMDC0"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-G4SBFVMDC0');
+        </script>
+
+
+
+
+        {% if (dark_mode) %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
+        {% else %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/light.css') }}">
+        {% endif %}
+        
+    </head>
+    <body>
+
+        <div id = "myModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">How to Play Numble?</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <p style = 'font-size: 0.8rem;'>You get 6 tries to guess the hidden equation! <br>You get one hint, the value!<br>All your guesses need to equate to the value to be accepted.</p>
+                    
+                  <div class = "row mt-2 ml-2 mb-2">
+                    <button class = ' box3 btn btn-success'>2</button>
+                    <button class = ' box3 btn btn-dark'>+</button>
+                    <button class = ' box3 btn btn-dark'>3</button>
+                    <button class = ' box3 btn btn-dark'>-</button>
+                    <button class = ' box3 btn btn-dark'>0</button>
+                    <button class = ' box3 btn btn-dark'>*</button>
+                    <button class = ' box3 btn btn-dark'>1</button>
+                    <div >
+                        <button class = 'box3 btn '> = </button>
+                        <button class = 'box3 btn ' >5</button>
+                    </div>
+
+                </div>
+                <p style = 'font-size: 0.8rem;'>The number 2 is in the correct place!</p>
+
+
+                <div class = "row mt-2 ml-2 mb-2">
+                    <button class = ' box3 btn btn-dark'>3</button>
+                    <button class = ' box3 btn btn-dark'>*</button>
+                    <button class = ' box3 btn btn-dark'>2</button>
+                    <button class = ' box3 btn btn-dark'>/</button>
+                    <button class = ' box3 btn btn-dark'>1</button>
+                    <button class = ' box3 btn btn-warning'>+</button>
+                    <button class = ' box3 btn btn-dark'>0</button>
+                    <div >
+                        <button class = 'box3 btn '> = </button>
+                        <button class = 'box3 btn ' >6</button>
+                    </div>
+
+
+                </div>
+                <p style = 'font-size: 0.8rem;'>The addition sign "+" exists in the equation but in a different place.</p>
+
+                <div class = "row mt-2 ml-2 mb-2">
+                    <button class = ' box3 btn btn-success'>2</button>
+                    <button class = ' box3 btn btn-success'>*</button>
+                    <button class = ' box3 btn btn-success'>5</button>
+                    <button class = ' box3 btn btn-success'>-</button>
+                    <button class = ' box3 btn btn-success'>1</button>
+                    <button class = ' box3 btn btn-dark'>/</button>
+                    <button class = ' box3 btn btn-success'>1</button>
+                    <div >
+                        <button class = 'box3 btn '> = </button>
+                        <button class = 'box3 btn ' >9</button>
+                    </div>
+
+                </div>
+                <p style = 'font-size: 0.8rem;'>The division sign "/" does not exist in the equation.</p>
+
+                <p><b>Rules</b></p>
+                <ul>
+                    <li style = 'font-size: 0.8rem;'>The equation follows the <b>DMAS</b> order of operations.</li>
+                    <li style = 'font-size: 0.8rem;'>Leading 0s are not allowed e.g. 1 will be accepted but 01 won't be.</li>
+                        
+                </ul>
+<!-- 
+                <p><b>Privacy Policy</b></p>
+                <ul>
+                    <li style = 'font-size: 0.8rem;'>We might use cookies.</li>
+                    <li style = 'font-size: 0.8rem;'>Leading 0s are not allowed e.g. 1 will be accepted but 01 won't be.</li>
+                        
+                </ul> -->
+
+
+
+                
+
+
+
+                </div>
+                <!-- <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div> -->
+              </div>
+            </div>
+          </div>
+
+        <div id="aliveModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">🎉 Numble is now Open Source! 🎉</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p style='font-size: 0.8rem;'></p>
+                        Want to help me build Numble? Find it now on <a  href= "https://github.com/reallyrehan/thenumble" style="color:blue;">GitHub <img  src="https://cdn-icons-png.flaticon.com/512/25/25231.png" height="20"></a>.
+                        <br>
+                        <br>
+                        You can also help in another way.
+
+                        Numble currently costs <b>$96</b>/year to run.
+                        <ul>
+                            <li>$84/year for the Web Hosting <a href ="https://devcenter.heroku.com/articles/dyno-types">from Heroku</a> </li>
+                            <li>$12/year for the domain</li>
+                    </ul>
+                        
+                        Right now, all of it comes from my pocket as well as donations from some amazing Numble-rs ❤️. <hr>If you want to help <b>keep Numble alive</b>, you can send me a <a style="color:blue;"href="https://www.paypal.com/donate?token=lNMWMc2-OqZfTym_gN7fGZGFmKN_ucnCHVSa-qwHhOvmZyDWcTxCeATUIuTfAB2a8Ki9WkPsr5kM5PBG" >donation on Paypal</a> or  <a href="https://www.buymeacoffee.com/rehanahmed"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=rehanahmed&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" height="30"/></a>.
+                        <br>
+        
+        
+        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+          <div id = "scoreModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+
+                <!-- <div class="modal-header">
+                    <a  class = "btn btn-secondary text-white">Your Stats</a>
+                    <a  class = "ml-4 btn btn-secondary text-white" >Numble Stats</a>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div> -->
+                  <button type="button" class="close ml-auto mt-2 mr-2" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+
+        
+             
+                
+                <div id = "youstats" class = "modal-body">
+                    <div class = "container">
+                        <div class = "row ml-4 mr-4">
+                            <div class = "col-12 text-center">
+                                <h5 ><b>DAILY STATISTICS</b></h5>
+                            </div>
+                            <div class = "col-4 text-center">
+                                <h1 id="your_score_played">10</h1>
+                            </div>
+                            <div class = "col-4 text-center">
+                                <h1 id = "your_score_won">8</h1>
+                            </div>
+                            <div class = "col-4 text-center">
+                                <h1 id = "your_score_percent">80</h1>
+                            </div>
+                            
+                            <div class = "col-4 text-center" style="margin-top:-10px">
+                                <small>Played</small>
+                            </div>
+                            <div class = "col-4 text-center" style="margin-top:-10px">
+                                <small>Won</small>
+                            </div>
+                            <div class = "col-4 text-center" style="margin-top:-10px">
+                                <small>Win %</small>
+                            </div>
+                            
+                        </div>
+                        <hr>
+                        <div class = "col-12 text-center">
+                            <p>Guess Distribution</p>
+                        </div>
+                    </div>
+                    <!-- <p>hello</p>
+                    <ul>
+                        <ol class="text-dark"><button class = "btn btn-primary" >0</button></ol>
+
+                    </ul> -->
+                    
+                    <table>
+                        <tr>
+                          <td>1</td>
+                          <td>
+                              <button id="your_guess_1" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0;">0</button>
+                        
+                          </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>
+                                <button id="your_guess_2" class ="btn btn-secondary ml-4 " style="padding-left:12px;border-radius: 0; ">0</button>
+                          
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>3</td>
+                            <td>
+                                <button id="your_guess_3" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0;">0</button>
+                          
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>4</td>
+                            <td>
+                                <button id="your_guess_4" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0;">0</button>
+                          
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>5</td>
+                            <td>
+                                <button id="your_guess_5" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0; ">0</button>
+                          
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>6</td>
+                            <td>
+                                <button id="your_guess_6" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0;">0</button>
+                          
+                            </td>
+                          </tr>
+                          <tr style = "display: none;">
+                            <td>X</td>
+                            <td>
+                                <button id="your_guess_7" class ="btn btn-secondary ml-4 " style="padding-left:12px;border-radius: 0; ">0</button>
+                          
+                            </td>
+                          </tr>
+                        
+                     
+                      </table>
+
+
+                </div>
+
+                <!-- <div id = "numblestats" class = "modal-body">
+                    <div class = "container">
+                        <div class = "row ml-4 mr-4">
+                            <div class = "col-12 text-center">
+                                <h5 ><b>NUMBLE {{numble_day_count}} STATISTICS</b></h5>
+                            </div>
+                            <div class = "col-4 text-center">
+                                <h1 id="numble_score_played">10</h1>
+                            </div>
+                            <div class = "col-4 text-center">
+                                <h1 id = "numble_score_won">8</h1>
+                            </div>
+                            <div class = "col-4 text-center">
+                                <h1 id = "numble_score_percent">80</h1>
+                            </div>
+                            
+                            <div class = "col-4 text-center" style="margin-top:-10px">
+                                <small>Played</small>
+                            </div>
+                            <div class = "col-4 text-center" style="margin-top:-10px">
+                                <small>Won</small>
+                            </div>
+                            <div class = "col-4 text-center" style="margin-top:-10px">
+                                <small>Win %</small>
+                            </div>
+                            
+                        </div>
+                        <hr>
+                        <div class = "col-12 text-center">
+                            <p>Guess Distribution</p>
+                        </div>
+                    </div>
+                
+                    
+                    <table>
+                        <tr>
+                          <td>1</td>
+                          <td>
+                              <button id="numble_guess_1" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0;">0</button>
+                        
+                          </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>
+                                <button id="numble_guess_2" class ="btn btn-secondary ml-4 " style="padding-left:12px;border-radius: 0; ">0</button>
+                          
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>3</td>
+                            <td>
+                                <button id="numble_guess_3" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0;">0</button>
+                          
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>4</td>
+                            <td>
+                                <button id="numble_guess_4" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0;">0</button>
+                          
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>5</td>
+                            <td>
+                                <button id="numble_guess_5" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0; ">0</button>
+                          
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>6</td>
+                            <td>
+                                <button id="numble_guess_6" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0;">0</button>
+                          
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>X</td>
+                            <td>
+                                <button id="guess_7" class ="btn btn-secondary ml-4 " style="padding-left:12px;border-radius: 0; ">0</button>
+                          
+                            </td>
+                          </tr>
+                        
+                     
+                      </table>
+
+                </div>
+  -->
+               
+  
+  <!-- <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div> -->
+              </div>
+            </div>
+          </div>
+
+        <div class="head mt-2" >
+            
+            <h1 class="d-flex justify-content-center" style="font-size:2.5rem;margin-bottom:0;"><button class="btn "
+                    id="info">ⓘ</button>&nbsp;&nbsp;&nbsp;NUMBLE&nbsp;
+                <button class="btn " id="statsButton">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="grey" height="24" viewBox="0 0 24 24" width="24">
+                        <path d="M16,11V3H8v6H2v12h20V11H16z M10,5h4v14h-4V5z M4,11h4v8H4V11z M20,19h-4v-6h4V19z"></path>
+                    </svg>
+                </button>
+                <a style="text-decoration: none;" href="/dark">
+                    <button class="btn btn-lg">☽</button>
+                </a>
+            </h1>
+            <small style="font-size:1rem;" id = "notif">{{numble_day_count}}</small>
+                <!-- <p style = "font-size:0.8rem; "><small>by</small></p>
+                <a href="https://github.com/reallyrehan" target="_blank" style = 'color:black;font-size:1rem;'> <p >Rehan Ahmed</p></a> -->
+            
+            <hr style="width: 15rem;margin-top:0;margin-bottom:5px;">
+        </div>
+        <div class = "container d-flex justify-content-center ">
+            <button type="button" id="numbleAlive" class="btn btn-sm btn-outline-secondary">Numble is now <b>Open Source!</b>!</button>
+
+        </div>
+
+        <div class = "container d-flex justify-content-center ">
+    
+            <div class = "boxes">
+
+                <div class = "row mt-2">
+                    <button class = 'box  btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box  btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box  btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box  btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box  btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box  btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box  btn btn-outline-secondary'>&nbsp;</button>
+                    <div id = 'a_0' >
+                        <button class = 'box btn '> = </button>
+                        <button class = 'box btn ' >{{answer_value}}</button>
+                    </div>
+                </div>
+                <div class = "row mt-2">
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <div id = 'a_1' style='display: none;'>
+                        <button class = 'box btn '> = </button>
+                        <button class = 'box btn ' >{{answer_value}}</button>
+                    </div>
+                </div>
+                <div class = "row mt-2">
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <div id = 'a_2' style='display: none;'>
+                        <button class = 'box btn '> = </button>
+                        <button class = 'box btn ' >{{answer_value}}</button>
+                    </div>
+                </div>
+                <div class = "row mt-2">
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <div id = 'a_3' style='display: none;'>
+                        <button class = 'box btn '> = </button>
+                        <button class = 'box btn ' >{{answer_value}}</button>
+                    </div>
+                </div>
+                <div class = "row mt-2">
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <div id = 'a_4' style='display: none;'>
+                        <button class = 'box btn '> = </button>
+                        <button class = 'box btn ' >{{answer_value}}</button>
+                    </div>
+                </div>
+                <div class = "row mt-2">
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <button class = 'box btn btn-outline-secondary'>&nbsp;</button>
+                    <div id = 'a_5' style='display: none;'>
+                        <button class = 'box btn '> = </button>
+                        <button class = 'box btn ' >{{answer_value}}</button>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+        <div class = "container d-flex justify-content-center ">
+            <div class = "row mt-2">
+                <div id = 'a_mobile' style='display: none;font-size:3rem;'>
+                     = {{answer_value}}
+                    
+
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class = "container " id="keyboard" style="margin-top:2rem;">
+            <div class = "row fluid " >
+                    <div class = "col-sm-12  d-flex justify-content-center">
+                        <div>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_1'>1</button>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_2'>2</button>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_3'>3</button>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_4'>4</button>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_5'>5</button>
+                </div>
+                </div>
+                <div class = " col-sm-12  d-flex justify-content-center" >
+                    <div>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_6'>6</button>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_7'>7</button>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_8'>8</button>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_9'>9</button>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_0'>0</button>
+                </div>
+
+                    </div>
+                    <div class = "col-sm-12  d-flex justify-content-center">
+                        <div>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_plus'>+</button>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_minus'>-</button>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_divide'>/</button>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_multiply'>*</button>
+                    <button class = 'box2 mt-2 ml-2 btn btn-secondary' id = 'b_back'>⌫</button>
+                </div>
+
+                </div>
+                <div class = "col-sm-12  d-flex justify-content-center">
+                    <div>
+                <button class = 'box2 mt-2 ml-2 btn btn-secondary' style="width:10rem; height:2rem;font-size:1rem" id = 'b_enter'>Enter</button>
+            </div>
+
+            </div>
+            </div>
+        </div>
+
+        <!-- <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"> -->
+
+
+
+        <footer class="footer" >
+            <div class="container-fluid">
+             <div class="row text-center">
+
+                <div class = "col-lg-12 ml-3">
+
+                  
+                    <small>Created by <a href="https://github.com/reallyrehan" target="_blank" >Rehan Ahmed</a> </small></div>
+
+
+                    <!-- Donate Button -->
+                    <div class = "col-lg-12 ml-3">
+                <form action="https://www.paypal.com/donate" method="post" target="_top">
+                    <input type="hidden" name="business" value="K76ZTZB5RST32" />
+                    <input type="hidden" name="no_recurring" value="0" />
+                    <input type="hidden" name="item_name" value="Your donation is going to help me make more fun stuff!" />
+                    <input type="hidden" name="currency_code" value="USD" />
+                    <input id = "btndonate" class="greyimage" type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+                    <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+                    </form>
+                    </div>
+
+             </div>
+   
+            </div>        
+           </footer>
+
+  
+
+
+
+
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+
+
+        
+        
+        <script src="" async defer></script>
+        <script
+          src="https://code.jquery.com/jquery-3.4.1.min.js"
+          integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+          crossorigin="anonymous"></script>
+        <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+<script>
+
+    // PRACTICE AREA
+
+    
+
+    // PRACTICE AREA
+
+    var size;
+    var mobile_ready = false;
+    var enter_enabled = true;
+
+// $(document).ready(function(){
+    if($(window).width() < 1000) { 
+        size = '2rem';
+        mobile_ready = true;
+        $('.box').css('width', size);
+        $('.box').css('height', size);
+        $('.box').css('font-size', '1rem');
+
+        size = '3rem'
+        $('.box2').css('width', size);
+        $('.box2').css('height', size);
+        $('.box2').css('font-size', '1rem');
+        $('#b_enter').css('width', '15rem');
+        $('#b_enter').css('height', '2rem');
+
+
+        $('#a_0').css('display', 'none');
+        $('#a_mobile').css('display', 'block');
+        $('.box').css('font-weight', '900');
+
+        $('#keyboard').css('margin-top','0');
+
+        // document.getElementById('scoreModal').classList.remove(['fade']);
+        // document.getElementById('myModal').classList.remove('fade');
+
+    }
+
+
+
+
+
+    // });
+
+    // var initiatePress = function(k){
+    //     console.log('hola')
+    //     var e = jQuery.Event("keypress");
+    // e.which = 48; // # Some key code value
+    // $(document).trigger(e);
+    // }
+
+    // document.getElementById('b_0').addEventListener('click', initiatePress(48));
+    $('#numbleAlive').click(function(){
+        $('#numbleAlive').hide()
+        $('#aliveModal').modal('show');
+
+        
+    })
+
+    $('#b_0').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '0'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_1').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '1'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_2').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '2'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_3').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '3'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_4').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '4'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_5').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '5'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_6').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '6'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_7').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '7'; // # Some key code value
+        checkKey(e);
+
+    });
+    $('#b_8').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '8'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_9').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '9'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_plus').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '+'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_minus').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '-'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_divide').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '/'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_multiply').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = '*'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_back').click(function(){
+        var e = jQuery.Event("keypress");
+        e.key = 'Backspace'; // # Some key code value
+        checkKey(e);
+    });
+    $('#b_enter').click(function(){
+        if (game_end_status == 0){
+            var e = jQuery.Event("keypress");
+        e.key = 'Enter'; // # Some key code value
+        checkKey(e);
+
+        }
+        else{
+            copyText();
+            window.alert("Copied to Clipboard!")
+
+        }
+
+    });
+    $('#info').click(function(){
+        // console.log("HELLO")
+        $('#myModal').modal('show');
+
+    });
+
+    $('#statsButton').click(function(){
+        // console.log("SUP")
+        $('#scoreModal').modal('show');
+        
+
+    });
+
+
+
+
+   
+    // $('#myModal').modal('show');
+
+    // $('.box').click(function(){
+    //     console.log(this)
+    //     console.log("HELLO")
+    //     this.classList.add('btn-success')
+    //     this.classList.add('text-white')
+    //     this.classList.remove('btn-outline-secondary')
+    // });
+
+    var getYourStats = function(){
+        $.ajax({
+            url: '/getScores',
+            type: 'GET',
+            success: function(response){
+                // console.log(response)
+                // console.log(data)
+                // console.log(response)
+                // $('#your_score').html(data['score'])
+                // $('#your_wins').html(data['wins'])
+                // $('#your_losses').html(data['losses'])
+
+                if (mobile_ready){
+                    var maxList = 250/Math.max(...response['distribution']);
+
+
+                }
+                else{
+                    var maxList = 403/Math.max(...response['distribution']);
+                }
+                
+                
+
+
+                for (var dist = 0;dist<response['distribution'].length;dist++){
+                    $('#your_guess_'+(dist+1)).html(response['distribution'][dist])
+
+                    if ((response['distribution'][dist]>0) & (response['distribution'][dist]*maxList>12)){
+                        document.getElementById('your_guess_'+(dist+1)).style.paddingLeft = response['distribution'][dist]*maxList+'px';
+
+                    }
+                    
+                }
+                
+
+
+                $('#your_score_played').html(response['played'])
+                $('#your_score_won').html(response['won'])
+                $('#your_score_percent').html(((response['won']/response['played'])*100).toFixed(0))
+                
+            }
+        })
+    }
+    
+
+   var newWord = function(remainingTime){
+        document.getElementById('notif').innerHTML = "Come back for a new equation "+remainingTime+"!";
+   }
+    
+
+
+
+    document.onkeydown = checkKey;
+    var keyCodes = ['1','2','3','4','5','6','7','8','9','0','+','-','/','*']
+    
+    var cur_count = 0;
+    var total_guesses =  {{ total }};
+    var numble_day_count = "{{numble_day_count}}";
+
+    var guess_history = {{ history }};
+    var guess_labels = {% autoescape false %}{{ labels }};{% endautoescape %}
+
+    var game_end_status = {{won_status}};
+
+    var global_remaining_time = "<br>in <b>{{ global_remaining_time }}</b>";
+    var mode_color = "{{dark_mode}}";
+    if (mode_color=="True"){
+        mode_color="white";
+    }
+    else{
+        mode_color="black";
+    }
+    // console.log(mode_color)
+    // console.log(dark_mode)
+    // console.log(global_remaining_time);
+
+    // var won_status = {{won_status}};
+    // var game_over = Boolean({{game_over}});
+
+
+
+    // console.log(total_guesses)
+    // var game_over = false;
+    // var won = false;
+
+    // console.log(guess_history)
+    // console.log()
+
+
+    var getResults = function(){
+
+        var el;
+        var ans_str = "";
+        for ( x=0;x<52;x++){
+
+
+            el = document.getElementsByClassName('box')[x].classList;
+            if (el.contains('btn-success')){
+                ans_str = ans_str + "🟩"
+            }
+            else if (el.contains('btn-warning')){
+                ans_str = ans_str + "🟨"
+            }
+            else if (el.contains('btn-dark')){
+                ans_str = ans_str + "⬛️"
+            }
+            else if (el.contains('btn-light')){
+                break;
+            }
+            
+            
+            
+        }
+        if (game_end_status == 1){
+            ans_str = ans_str.match(/.{1,14}/g).join('\n') + "\n\n"+(total_guesses)+"/6";
+
+        }
+        else{
+            ans_str = ans_str.match(/.{1,14}/g).join('\n') + "\n\nX/6";
+
+        }
+
+        return ans_str;
+    }
+
+    var copyText = function(){
+        var textarea = document.createElement("textarea");
+
+        var my_score = '#Numble '+numble_day_count+'\n\n'+getResults()+'\n\nwww.thenumble.app';
+
+
+        textarea.textContent = my_score;
+
+        textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in Microsoft Edge.
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+        }
+        catch (ex) {
+            console.warn("Copy to clipboard failed.", ex);
+            return prompt("Copy to clipboard: Ctrl+C, Enter", text);
+        }
+        finally {
+            document.body.removeChild(textarea);
+        }
+        // console.log(my_score)
+        
+    }
+
+
+    var winFunction = function(remainingTime){
+        var x;
+        for ( x=0;x<15;x++){
+            document.getElementsByClassName('box2')[x].classList.remove('btn-secondary','btn-success','btn-warning','btn-dark')
+            document.getElementsByClassName('box2')[x].innerHTML = "&nbsp;"
+        }
+        document.getElementsByClassName('box2')[6].innerHTML = "W";
+        document.getElementsByClassName('box2')[7].innerHTML = "I";
+        document.getElementsByClassName('box2')[8].innerHTML = "N";
+        document.getElementsByClassName('box2')[6].classList.add('btn-danger')
+        document.getElementsByClassName('box2')[7].classList.add('btn-danger')
+        document.getElementsByClassName('box2')[8].classList.add('btn-danger')
+
+        for (var i =0;i<6;i++){
+            document.getElementsByClassName('box2')[i].style.display = 'none';
+            }
+
+        for (var i =9;i<15;i++){
+            document.getElementsByClassName('box2')[i].style.display = 'none';
+            }
+        document.getElementsByClassName('box2')[15].classList.add('btn-success','text-white')
+        document.getElementsByClassName('box2')[15].innerHTML = "Share "
+ 
+
+        newWord(remainingTime);
+
+        document.getElementById('btndonate').classList.remove('greyimage');
+
+    }
+
+    var loseFunction = function(remainingTime){
+        var x;
+        // for (var i =0;i<5;i++){
+        //     document.getElementsByClassName('box2')[i].style.display = 'none';
+        //     }
+        for ( x=0;x<15;x++){
+            document.getElementsByClassName('box2')[x].classList.remove('btn-secondary','btn-success','btn-warning','btn-dark')
+            document.getElementsByClassName('box2')[x].innerHTML = "&nbsp;"
+        }
+        for (var i =0;i<6;i++){
+            document.getElementsByClassName('box2')[i].style.display = 'none';
+            }
+
+        for (var i =10;i<15;i++){
+            document.getElementsByClassName('box2')[i].style.display = 'none';
+            }
+        document.getElementsByClassName('box2')[15].classList.add('btn-success','text-white')
+        document.getElementsByClassName('box2')[15].innerHTML = "Share "
+
+
+
+
+
+        document.getElementsByClassName('box2')[6].innerHTML = "L";
+        document.getElementsByClassName('box2')[7].innerHTML = "O";
+        document.getElementsByClassName('box2')[8].innerHTML = "S";
+        document.getElementsByClassName('box2')[9].innerHTML = "T";
+        document.getElementsByClassName('box2')[6].classList.add('btn-danger')
+        document.getElementsByClassName('box2')[7].classList.add('btn-danger')
+        document.getElementsByClassName('box2')[8].classList.add('btn-danger')
+        document.getElementsByClassName('box2')[9].classList.add('btn-danger')
+        newWord(remainingTime);
+
+
+        document.getElementById('btndonate').classList.remove('greyimage');
+    }
+
+    var updateHistory = function(total_guesses,guess_history,guess_labels){
+        
+        for (h=0; h<guess_history.length; h++){
+            
+            // if (total_guesses<6 && won_status!=1){
+            //     document.getElementById('a_0').style.display = 'none';
+
+            // }
+            
+
+            // console.log(guess_history[h])
+                            
+            var add_class;
+            for (var i = 0; i < 7; i++){
+                element = document.getElementsByClassName('box')[(h*9) + i]
+                el_2 = document.getElementsByClassName('box2')[keyCodes.indexOf(guess_labels[h][i])]
+                
+
+                if (guess_history[h][i]==0){
+                    add_class = 'btn-warning'
+
+                    
+                    if (el_2.classList.contains('btn-secondary')){
+                        el_2.classList.add('btn-warning','text-light')
+                        el_2.classList.remove('btn-secondary')
+                    }
+
+
+                }
+                else if (guess_history[h][i]==1){
+                    add_class = 'btn-success'
+
+
+
+                    el_2.classList.add('btn-success','text-light')
+                    el_2.classList.remove('btn-warning','btn-secondary','btn-dark')
+
+
+
+
+                }
+                else if (guess_history[h][i]==-1){
+                    add_class = 'btn-dark'
+
+                    if ( !el_2.classList.contains('btn-warning') && !el_2.classList.contains('btn-success')){
+                        el_2.classList.add('btn-dark','text-light')
+                                    // document.getElementsByClassName('box2')[data['labels'][i]].classList.remove('btn-warning','btn-secondary')
+                    }
+
+
+
+                }
+                element.classList.remove('btn-outline-secondary')
+                element.classList.add('text-white')
+                element.classList.add(add_class)
+                element.innerHTML = guess_labels[h][i]
+            }
+        }
+        // if(!mobile_ready){
+        //     document.getElementById('a_'+total_guesses).style.display = 'block';
+
+        // }
+    }
+    if (total_guesses >0 ){
+        updateHistory(total_guesses,guess_history,guess_labels);
+
+    }
+
+    for (var i = 0; i < 6; i++){
+            document.getElementById('a_'+i).style.display = 'none';
+        }
+
+
+
+    if(!mobile_ready){
+
+        
+        // console.log(total_guesses)
+        // console.log(game_over)
+        if (game_end_status == 1 || game_end_status ==-1){
+            document.getElementById('a_'+(total_guesses-1)).style.display = 'block';
+        }
+        else{
+            // document.getElementById('notif').innerHTML = mobile_ready
+            // console.log(mobile_ready)
+            document.getElementById('a_'+total_guesses).style.display = 'block';
+        }
+       
+
+        }
+    if (game_end_status==1){
+        winFunction(global_remaining_time);
+    }
+    else if (game_end_status==-1){
+        loseFunction(global_remaining_time);
+    }
+
+    // if (mobile_ready){
+    //     for (var i = 0; i < 6; i++){
+    //         document.getElementById('a_'+i).style.display = 'none';
+    //     }
+    // }
+
+
+    function shakeShake(){
+        // console.log("INVALID")
+                            var element;
+                            for (var i = 0; i < cur_count; i++){
+                                element = document.getElementsByClassName('box')[(total_guesses*9) + i]
+                                element.classList.add('shake')
+                                
+                                
+
+                            }
+
+                            
+                            document.getElementById('a_'+total_guesses).children[0].style.color='red'
+                            document.getElementById('a_mobile').style.color='red'
+
+                            setTimeout(function(){
+                                document.getElementById('a_'+total_guesses).children[0].style.color = mode_color;
+                                document.getElementById('a_mobile').style.color = mode_color;
+                                for (var i = 0; i < cur_count; i++){
+                                    element = document.getElementsByClassName('box')[(total_guesses*9) + i]
+                                    element.classList.remove('shake')
+
+                                    
+                                }
+                            }, 500)
+    }
+
+    // console.log(cur_count)
+
+
+
+function checkKey(e) {
+    // console.log(e.which)
+
+    e = e || window.event;
+    // console.log(e.key)
+    if ( game_end_status==1 || game_end_status==-1){
+        return;
+    }
+    if (keyCodes.includes(e.key)){
+        // console.log(e)
+
+        if (cur_count<7){
+            document.getElementsByClassName('box')[(total_guesses*9) + cur_count].innerHTML = e.key;
+            cur_count += 1;
+        }
+
+        // up arrow
+    }
+    else if(e.key == 'Backspace'){
+        // console.log(cur_count)
+        if (cur_count>0){
+            
+            cur_count -= 1;
+            document.getElementsByClassName('box')[(total_guesses*9) + cur_count].innerHTML = "&nbsp";
+        }
+
+    }
+    else if  (e.key == 'Enter' && cur_count<7){
+        
+        // console.log("SHAKESHAKE")
+        shakeShake();
+    }
+    else if (e.key == 'Enter' && enter_enabled){
+        enter_enabled = false;
+        // console.log('Submitting')
+        var guess = document.getElementsByClassName('box')[(total_guesses*9) + 0].innerHTML + document.getElementsByClassName('box')[(total_guesses*9) + 1].innerHTML + document.getElementsByClassName('box')[(total_guesses*9) + 2].innerHTML + document.getElementsByClassName('box')[(total_guesses*9) + 3].innerHTML + document.getElementsByClassName('box')[(total_guesses*9) + 4].innerHTML + document.getElementsByClassName('box')[(total_guesses*9) + 5].innerHTML + document.getElementsByClassName('box')[(total_guesses*9) + 6].innerHTML;
+        // console.log(guess)
+
+				$.ajax({
+					type: 'POST',
+					url: '/submit',
+					data: JSON.stringify({
+                        guess: guess,
+                        total_guesses: total_guesses,
+                        cur_count: cur_count
+                    }),
+                    contentType: 'application/json;charset=UTF-8',
+					success: function(data) {
+
+                        total_guesses = data['session_total']
+                        
+                        // console.log(data)
+                        if (data['value']==-1){
+                            shakeShake();
+
+            
+
+                        }
+                        else if (data['value']==0){
+                            // console.log("NEXT GUESS")
+
+                            
+
+                            if (!mobile_ready && (total_guesses-1)<5){
+                                document.getElementById('a_'+(total_guesses-1)).style.display = 'none';
+                                document.getElementById('a_'+((total_guesses-1)+1)).style.display = 'block';
+
+                            }
+                            
+                            
+                            var add_class;
+                            for (var i = 0; i < cur_count; i++){
+                                element = document.getElementsByClassName('box')[((total_guesses-1)*9) + i]
+
+                                el_2 = document.getElementsByClassName('box2')[keyCodes.indexOf(data['labels'][i])]
+
+
+
+
+                                if (data['ls'][i]==0){
+                                    add_class = 'btn-warning'
+
+
+                                if (el_2.classList.contains('btn-secondary')){
+                                    el_2.classList.add('btn-warning','text-light')
+                                    el_2.classList.remove('btn-secondary')
+                                }
+                                    
+                                    // console.log("HERE "+data['labels'][i])
+
+                                }
+                                else if (data['ls'][i]==1){
+                                    add_class = 'btn-success'
+
+                                    // if ( !el_2.classList.contains('btn-warning')){
+                                    el_2.classList.add('btn-success','text-light')
+                                    el_2.classList.remove('btn-warning','btn-secondary','btn-dark')
+                                // }
+
+
+                                }
+                                else if (data['ls'][i]==-1){
+                                    add_class = 'btn-dark'
+
+
+                                    if ( !el_2.classList.contains('btn-warning') && !el_2.classList.contains('btn-success')){
+                                        el_2.classList.add('btn-dark','text-light')
+                                    // document.getElementsByClassName('box2')[data['labels'][i]].classList.remove('btn-warning','btn-secondary')
+                                }
+                                }
+                                element.classList.remove('btn-outline-secondary')
+                                element.classList.add('text-white')
+                                element.classList.add(add_class)
+                            }
+
+
+
+
+
+                            // total_guesses += 1;
+                            // console.log(total_guesses)
+                            if (total_guesses==6){
+                                game_end_status = -1
+                                // game_over = true;
+                                // won = false;
+                                // console.log(data["next_word_time"])
+                                // nextWordTime();
+
+                                
+
+                                loseFunction("<br>in <b>"+data['next_word_time']+"</b><br>Today's equation was: <br><b>"+data['equation']+"</b>");
+                                getYourStats();
+                                // $('#scoreModal').modal('show');
+                                setTimeout(function(){
+                                    $('#scoreModal').modal('show');
+                                },800)
+                                return;
+                            }
+                            
+                            // console.log(document.getElementById('a_'+total_guesses))
+                            cur_count=0
+
+
+
+
+                        }
+                        else if (data['value']==1){
+                            // console.log("WIN")
+                            var add_class;
+                            for (var i = 0; i < cur_count; i++){
+                                element = document.getElementsByClassName('box')[((total_guesses-1)*9) + i]
+                                if (data['ls'][i]==0){
+                                    add_class = 'btn-warning'
+                                }
+                                else if (data['ls'][i]==1){
+                                    add_class = 'btn-success'
+                                }
+                                else if (data['ls'][i]==-1){
+                                    add_class = 'btn-dark'
+                                }
+                                element.classList.remove('btn-outline-secondary')
+                                element.classList.add('text-white')
+                                element.classList.add(add_class)
+                            }
+
+
+
+
+
+                            // total_guesses += 1;
+                            game_end_status = 1
+
+                            // game_over = true;
+                            // won = true;
+
+                            // element = document.getElementById('win');
+                  
+                            // // element.classList.add('flip');
+                            // // element.style.transform = 'scaleX (-1)'
+                            // element.innerHTML = "WIN";
+                            // element.style.color='red'
+                            
+                            // setTimeout(function(){
+                            //     element.classList.remove('flip')
+                            // },1000)
+
+
+
+
+
+                            // document.getElementById('win').classList.add('badge','badge-danger');
+
+
+                            // winFunction(data['next_word_time']);
+                            winFunction("<br>in <b>"+data['next_word_time']+"</b>");
+                            getYourStats();
+                            // $('#scoreModal').modal('show');
+                            setTimeout(function(){
+                                    $('#scoreModal').modal('show');
+                                },800)
+
+
+
+
+
+
+                            // document.getElementsByClassName('box')[(3*9) + 2].classList.add('btn-danger','text-white');
+                            // document.getElementsByClassName('box')[(3*9) + 3].innerHTML = "I";
+                            // document.getElementsByClassName('box')[(3*9) + 3].classList.add('btn-danger','text-white');
+
+                            // document.getElementsByClassName('box')[(3*9) + 4].innerHTML = "N";
+                            // document.getElementsByClassName('box')[(3*9) + 4].classList.add('btn-danger','text-white');
+
+                        }
+					},
+				});
+                enter_enabled = true;
+    }
+}
+getYourStats();
+    </script>
+
+
+
+
+    </body>
+</html>
