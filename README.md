@@ -22,65 +22,7 @@ Right now, all of it comes from my pocket (and some donations from amazing Numbl
 
 ## How to Play?
 
-<p style = 'font-size: 0.8rem;'>You get 6 tries to guess the hidden equation! <br>You get one hint, the value!<br>All your guesses need to equate to the value to be accepted.</p>
-
-<div class = "row mt-2 ml-2 mb-2">
-<button style = "background-color: green; color:white;">2</button>
-<button style = "background-color:black; color:white;">+</button>
-<button style = "background-color:black; color:white;">3</button>
-<button style = "background-color:black; color:white;">-</button>
-<button style = "background-color:black; color:white;">0</button>
-<button style = "background-color:black; color:white;">*</button>
-<button style = "background-color:black; color:white;">1</button>
-<div >
-    <button style = "color:black;"> = </button>
-    <button style = "color:black;" >5</button>
-</div>
-
-</div>
-<p style = 'font-size: 0.8rem;'>The number 2 is in the correct place!</p>
-
-
-<div class = "row mt-2 ml-2 mb-2">
-    <button style = "background-color:black; color:white;">3</button>
-    <button style = "background-color:black; color:white;">*</button>
-    <button style = "background-color:black; color:white;">2</button>
-    <button style = "background-color:black; color:white;">/</button>
-    <button style = "background-color:black; color:white;">1</button>
-    <button style = "background-color: #f5cb42; color:black;">+</button>
-    <button style = "background-color:black; color:white;">0</button>
-    <div >
-        <button style = "color:black;"> = </button>
-        <button style = "color:black;" >6</button>
-    </div>
-
-
-</div>
-<p style = 'font-size: 0.8rem;'>The addition sign "+" exists in the equation but in a different place.</p>
-
-<div class = "row mt-2 ml-2 mb-2">
-    <button style = "background-color: green; color:white;">2</button>
-    <button style = "background-color: green; color:white;">*</button>
-    <button style = "background-color: green; color:white;">5</button>
-    <button style = "background-color: green; color:white;">-</button>
-    <button style = "background-color: green; color:white;">1</button>
-    <button style = "background-color:black; color:white;">/</button>
-    <button style = "background-color: green; color:white;">1</button>
-    <div >
-        <button style = "color:black;"> = </button>
-        <button style = "color:black;" >9</button>
-    </div>
-
-</div>
-<p style = 'font-size: 0.8rem;'>The division sign "/" does not exist in the equation.</p>
-
-<p><b>Rules</b></p>
-<ul>
-    <li style = 'font-size: 0.8rem;'>The equation follows the <b>DMAS</b> order of operations.</li>
-    <li style = 'font-size: 0.8rem;'>Leading 0s are not allowed e.g. 1 will be accepted but 01 won't be.</li>
-        
-</ul>
-
+<img src = "rules.png">
 
 
 # How to Contribute?
