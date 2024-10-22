@@ -50,7 +50,7 @@ def evaluator(inp):
     except:
         return False, 'Invalid Equation'
 
-    return True, ""
+    return True
 
 
 def get_truth_value():
@@ -73,8 +73,7 @@ def checker(inp):
         truth_dict[i] += 1
 
     result_ls = []
-    eval_status, error_message = evaluator(inp)
-    print(error_message)
+    eval_status = evaluator(inp)
 
     if eval_status:  # Remove this to perform regex to avoid code vulnerability
 
@@ -98,8 +97,7 @@ def checker(inp):
                 result_ls.append((i, -1, inp[i]))
 
     else:
-        print(error_message)
-        return result_ls, -1, error_message
+        return result_ls, -1
 
     session['total_guesses'] += 1
 
@@ -164,25 +162,24 @@ def initialize_session(seed):
         session['dark_mode'] = False
 
 
-def get_history():
-    history = []
-    for guess in session['guess_history']:
-        temp = []
-        for j in guess:
-            temp.append(j[1])
-        history.append(temp)
-    return history
+def get_feedback_color():
+    feedback = []
+    for row in session['guess_history']:
+        guess = []
+        for box in row:
+            guess.append(box[1])
+        feedback.append(guess)
+    return feedback
 
 
-def get_labels():
-    labels = []
-    for guess in session['guess_history']:
-        temp = []
-        for j in guess:
-            temp.append(j[2])
-        labels.append(temp)
-    print(labels)
-    return labels
+def get_guesses():
+    guesses = []
+    for row in session['guess_history']:
+        guess = []
+        for box in row:
+            guess.append(box[2])
+        guesses.append(guess)
+    return guesses
 
 
 @app.route('/dark')
@@ -211,13 +208,13 @@ def index_seed(var=""):
     session['generate'] = True
     session['generate_key'] = var
 
-    print(session['today_seed'])
-    print(get_truth_value())
-    print(session['total_guesses'])
+    print("Today seed: " + session['today_seed'])
+    print("Answer: " + str(get_truth_value()))
+    print("Total guesses: " + str(session['total_guesses']))
 
     return render_template('index.html', answer_value=get_truth_ans(), total=session['total_guesses'],
-                           history=get_history(),
-                           labels=get_labels(), won_status=session["won_status"], numble_day_count="#mynumble: " + var,
+                           history=get_feedback_color(),
+                           labels=get_guesses(), won_status=session["won_status"], numble_day_count="#mynumble: " + var,
                            global_remaining_time=next_word_time(), dark_mode=session['dark_mode'])
 
 
@@ -233,12 +230,12 @@ def index():
 
     session['generate'] = False
 
-    print(get_truth_value())
-    print(session['total_guesses'])
+    print("Answer: " + str(get_truth_value()))
+    print("Total guesses: " + str(session['total_guesses']))
 
     return render_template('index.html', answer_value=get_truth_ans(), total=session['total_guesses'],
-                           history=get_history(),
-                           labels=get_labels(), won_status=session["won_status"],
+                           history=get_feedback_color(),
+                           labels=get_guesses(), won_status=session["won_status"],
                            numble_day_count="# " + str(get_day_count()),
                            global_remaining_time=next_word_time(), dark_mode=session['dark_mode'])
 
@@ -322,7 +319,7 @@ def submit():
 
         session['last_played'] = session['today_seed']
 
-        print(session['total_guesses'])
+        print("Total guesses: " + str(session['total_guesses']))
 
     return jsonify({'value': results[1], 'ls': ls, 'labels': label_ls, 'next_word_time': next_word_time(),
                     'session_total': session['total_guesses'], 'equation': get_truth_value()})
