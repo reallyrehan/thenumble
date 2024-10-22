@@ -10,9 +10,7 @@ fa = FontAwesome(app)
 app.secret_key = 'my_secret'  # FIX
 
 seed_equation_dict = {}
-
 numble_score_distribution = {}
-
 char_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '+', '-', '/', '*']
 
 
@@ -46,7 +44,7 @@ def evaluator(inp):
             return False, 'Invalid Character'
 
     try:
-        if eval(''.join(inp)) != getTruthAns():
+        if eval(''.join(inp)) != get_truth_ans():
             return False, 'Equation Unsolved'
 
     except:
@@ -55,19 +53,19 @@ def evaluator(inp):
     return True, ""
 
 
-def getTruthValue():
+def get_truth_value():
     return generator()[0]  # '2*35+11'
 
 
-def getTruthAns():
-    truth_st = getTruthValue()
+def get_truth_ans():
+    truth_st = get_truth_value()
     truth_ls = list(truth_st)
     truth_value = eval(''.join(truth_ls))
     return int(truth_value)
 
 
 def checker(inp):
-    truth_st = getTruthValue()
+    truth_st = get_truth_value()
     truth_ls = list(truth_st)
     truth_dict = defaultdict(int)
 
@@ -111,22 +109,80 @@ def checker(inp):
         return result_ls, 0, ""
 
 
-def getSeed():
+def get_seed():
     today = datetime.now()
-    year, month, day, hour = str(today.year), str(today.month), str(today.day), str(today.hour)
+    year, month, day = str(today.year), str(today.month), str(today.day)
 
     month = month if len(month) == 2 else '0' + month
     day = day if len(day) == 2 else '0' + day
-    hour = hour if len(hour) == 2 else '0' + hour
 
     return year + month + day
 
 
-def getDayCount():
+def get_day_count():
     start_date = datetime.strptime('Jan 31 2022', '%b %d %Y')
     cur_date = datetime.now()
     numble_word_count = (cur_date - start_date).days
     return numble_word_count
+
+
+def get_var_seed(seed_str):
+    try:
+        return int(''.join([str(ord(i) % 100) for i in seed_str]))
+    except:
+        return 97
+
+
+def add_score(sc_int):
+    try:
+        if session['today_seed'] not in numble_score_distribution:
+            numble_score_distribution[session['today_seed']] = [0] * 7
+
+        if sc_int == -1:
+            numble_score_distribution[session['today_seed']][-1] += 1
+        else:
+            numble_score_distribution[session['today_seed']][sc_int - 1] += 1
+    except:
+        print("Problem adding global scores")
+        pass
+
+
+def initialize_session(seed):
+    new_session = True
+    if 'last_played' in session and session['last_played'] == seed:
+        new_session = False
+
+    if new_session:
+        session.permanent = True
+        session['total_guesses'] = 0
+        session['guess_history'] = []
+        session['won_status'] = 0
+
+    session['today_seed'] = seed
+
+    if 'dark_mode' not in session:
+        session['dark_mode'] = False
+
+
+def get_history():
+    history = []
+    for guess in session['guess_history']:
+        temp = []
+        for j in guess:
+            temp.append(j[1])
+        history.append(temp)
+    return history
+
+
+def get_labels():
+    labels = []
+    for guess in session['guess_history']:
+        temp = []
+        for j in guess:
+            temp.append(j[2])
+        labels.append(temp)
+    print(labels)
+    return labels
 
 
 @app.route('/dark')
@@ -142,157 +198,50 @@ def dark():
         return redirect('/')
 
 
-def getVarSeed(seed_str):
-    try:
-        return int(''.join([str(ord(i) % 100) for i in seed_str]))
-    except:
-        return 97
-
-
 @app.route('/mynumble/<var>')
 @app.route('/mynumble/')
-def indexSeed(var=""):
+def index_seed(var=""):
     if len(var) == 0:
         var = "a"
     var = var[0:6]
-    seed = getVarSeed(var)
+    seed = get_var_seed(var)
 
-    new_session = True
-    if 'last_played' in session and session['last_played'] == seed:
-        # session.permanent = True
-        new_session = False
-
-    if new_session:
-        session.permanent = True
-        session['total_guesses'] = 0
-        session['guess_history'] = []
-        session['won_status'] = 0
-
-    session['today_seed'] = seed
-
-    if 'dark_mode' not in session:
-        session['dark_mode'] = False
+    initialize_session(seed)
 
     session['generate'] = True
     session['generate_key'] = var
 
-    history = []
-    labels = []
-    for i in session['guess_history']:
-        temp = []
-        temp_2 = []
-        for j in i:
-            temp.append(j[1])
-            temp_2.append(j[2])
-        history.append(temp)
-        labels.append(temp_2)
-
     print(session['today_seed'])
-    print(getTruthValue())
+    print(get_truth_value())
     print(session['total_guesses'])
 
-    return render_template('index.html', answer_value=getTruthAns(), total=session['total_guesses'], history=history,
-                           labels=labels, won_status=session["won_status"], numble_day_count="#mynumble: " + var,
+    return render_template('index.html', answer_value=get_truth_ans(), total=session['total_guesses'],
+                           history=get_history(),
+                           labels=get_labels(), won_status=session["won_status"], numble_day_count="#mynumble: " + var,
                            global_remaining_time=next_word_time(), dark_mode=session['dark_mode'])
-
-
-def addScore(sc_int):
-    try:
-        if session['today_seed'] not in numble_score_distribution:
-            numble_score_distribution[session['today_seed']] = [0] * 7
-
-        if sc_int == -1:
-            numble_score_distribution[session['today_seed']][-1] += 1
-        else:
-            numble_score_distribution[session['today_seed']][sc_int - 1] += 1
-    except:
-        print("Problem adding global scores")
-        pass
 
 
 @app.route('/')
 def index():
-    # cur_version = 0.3
-    # date_today = datetime.now().date
-    # ip_address = request.remote_addr
-    # print(request.remote_addr)
+    seed = get_seed()
+    print("Seed: " + seed)
 
-    # if ('version' not in session) or (session['version'] != cur_version):
-    #     session.clear()
-
-    # session.clear()
-
-    seed = getSeed()
-    print(seed)
-
-    new_session = True
-    if 'last_played' in session and session['last_played'] == seed:
-        # session.permanent = True
-        new_session = False
-
-    # if 'total_guesses' not in session or 'guess_history' not in session or 'won_status' not in session:
-    # session.permanent = True
-    # session.clear()
-    if new_session:
-        session.permanent = True
-        session['total_guesses'] = 0
-        session['guess_history'] = []
-        session['won_status'] = 0
-        # session['version'] = cur_version
-
-    session['today_seed'] = seed
-
-    if 'dark_mode' not in session:
-        session['dark_mode'] = False
+    initialize_session(seed)
 
     if 'scores' not in session:
         session['scores'] = defaultdict(int)
 
     session['generate'] = False
 
-    # TESTING
-    # session.clear()
-    # session.permanent = True
-    # session['total_guesses'] = 0
-    # session['guess_history'] = []
-    # session['won_status'] = -1
-
-    # print(date_today)
-    # session['date_today'] = date_today
-
-    # print(session['guess_history'])
-    history = []
-    labels = []
-    # all_labels = []
-    for i in session['guess_history']:
-        temp = []
-        temp_2 = []
-        for j in i:
-            temp.append(j[1])
-            temp_2.append(j[2])
-        history.append(temp)
-        labels.append(temp_2)
-        # all_labels.extend(temp_2)
-
-    # print(history)
-    # print(labels)
-    print(getTruthValue())
+    print(get_truth_value())
     print(session['total_guesses'])
-    # print(session['scores'])
 
-    return render_template('index.html', answer_value=getTruthAns(), total=session['total_guesses'], history=history,
-                           labels=labels, won_status=session["won_status"], numble_day_count="# " + str(getDayCount()),
+    return render_template('index.html', answer_value=get_truth_ans(), total=session['total_guesses'],
+                           history=get_history(),
+                           labels=get_labels(), won_status=session["won_status"],
+                           numble_day_count="# " + str(get_day_count()),
                            global_remaining_time=next_word_time(), dark_mode=session['dark_mode'])
 
-
-# @app.route('/getHistory',methods = ['GET'])
-# def get_guess():
-#     # print(session['total_guesses'])
-#     # ls = [i[1] for i in sorted(session['guess_history'],key = lambda a: a[0])]
-#     # print(session['guess_history'])
-
-#     # return(session['total_guesses'])
-#     return jsonify({'total':session['total_guesses'],'history':session['guess_history']})
 
 @app.route('/getScores', methods=['GET'])
 def get_scores():
@@ -317,22 +266,22 @@ def get_numble_scores():
     if 'today_seed' in session:
         cur_seed = session['today_seed']
     else:
-        cur_seed = getSeed()
+        cur_seed = get_seed()
 
     if cur_seed not in numble_score_distribution:
         numble_score_distribution[cur_seed] = [0] * 7
 
-    temp_distrubution = numble_score_distribution[cur_seed]
+    temp_distribution = numble_score_distribution[cur_seed]
 
-    played, won = sum(temp_distrubution), sum(temp_distrubution[0:-1])
+    played, won = sum(temp_distribution), sum(temp_distribution[0:-1])
 
     if played > 0:
-        numble_percent = list(map(lambda a: int((a / played) * 100), temp_distrubution))
+        numble_percent = list(map(lambda a: int((a / played) * 100), temp_distribution))
     else:
         numble_percent = [0] * 7
 
     return jsonify(
-        {'numble_distribution': temp_distrubution,
+        {'numble_distribution': temp_distribution,
          'played': played,
          'won': won,
          'numble_percent': numble_percent
@@ -341,21 +290,12 @@ def get_numble_scores():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    # print(request.__dict__)
     if request.method == 'POST':
-        # print("HERE ARE SENT GUESSES "+str(request.json['total_guesses']))
-        # print("HERE ARE CURRENT GUESSES "+str(session['total_guesses']))
-
         if request.json['total_guesses'] != session['total_guesses']:
             return jsonify({'value': [], 'ls': [], 'labels': [], 'next_word_time': next_word_time(),
                             'session_total': session['total_guesses']})
 
-        # print(session['total_guesses'])
         inp = request.json['guess'][0:request.json['cur_count']]
-        # print(request.json['guess'])
-        # print(inp)
-
-        # print(checker(inp))
 
         results = checker(inp)
         ls = [i[1] for i in sorted(results[0], key=lambda a: a[0])]
@@ -364,8 +304,6 @@ def submit():
         if results[1] != -1:
             session['guess_history'].append([i for i in sorted(results[0], key=lambda a: a[0])])
 
-            # print(session['guess_history'])
-
         if results[1] == 1:
             session['won_status'] = results[1]
 
@@ -373,32 +311,22 @@ def submit():
             if (not session['generate']) and ('scores' in session):
                 session['scores'][session['today_seed']] = session['total_guesses']
 
-                addScore(session['total_guesses'])
-                # print(session['scores'])
+                add_score(session['total_guesses'])
 
         elif session['total_guesses'] >= 6:
             session['won_status'] = -1
 
             if (not session['generate']) and ('scores' in session):
                 session['scores'][session['today_seed']] = -1
+                add_score(-1)
 
-                addScore(-1)
-                # print(session['scores'])
-
-        # if session['won_status'] in [1,-1]:
-        # today = datetime.now()
-        # seed = getSeed()
         session['last_played'] = session['today_seed']
 
-        # print(results[0])
-        # print(seed_equation_dict)
         print(session['total_guesses'])
 
     return jsonify({'value': results[1], 'ls': ls, 'labels': label_ls, 'next_word_time': next_word_time(),
-                    'session_total': session['total_guesses'], 'equation': getTruthValue()})
+                    'session_total': session['total_guesses'], 'equation': get_truth_value()})
 
 
 if __name__ == '__main__':
-    # app.run()
-
-    app.run(host='localhost   ', debug=True, port=5001)  # FIX
+    app.run(host='localhost', debug=True, port=5001)  # FIX
