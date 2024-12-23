@@ -3,11 +3,12 @@ from flask_fontawesome import FontAwesome
 from datetime import datetime
 from collections import defaultdict
 from utils import new_equation_generator
+import os
 
 app = Flask(__name__)
 fa = FontAwesome(app)
 
-app.secret_key = 'my_secret'  # FIX
+app.secret_key = os.getenv('NUMBLE_FLASK_SECRET_KEY', 'my_secret_key')
 
 seed_equation_dict = {}
 numble_score_distribution = {}
