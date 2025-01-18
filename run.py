@@ -51,7 +51,7 @@ def evaluator(inp):
     except:
         return False, 'Invalid Equation'
 
-    return True
+    return True, None
 
 
 def get_truth_value():
@@ -74,7 +74,9 @@ def checker(inp):
         truth_dict[i] += 1
 
     result_ls = []
-    eval_status = evaluator(inp)
+    eval_status, error_message = evaluator(inp)
+
+    print("Eval status: {} {}".format(eval_status, error_message))
 
     if eval_status:  # Remove this to perform regex to avoid code vulnerability
 
