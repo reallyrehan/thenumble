@@ -117,7 +117,7 @@ def get_seed():
     month = month if len(month) == 2 else '0' + month
     day = day if len(day) == 2 else '0' + day
 
-    return year + month + day
+    return year + month + day # + str(today.second) ## Testing
 
 
 def get_day_count():
@@ -147,9 +147,13 @@ def add_score(sc_int):
         print("Problem adding global scores")
         pass
 
+# Testing method
+# @app.route('/reset')
+# def test_session():
+#     session.clear()
+#     return redirect('/')
 
-def initialize_session(seed):
-    new_session = True
+def initialize_session(seed, new_session=True):
     if 'last_played' in session and session['last_played'] == seed:
         new_session = False
 
@@ -158,6 +162,9 @@ def initialize_session(seed):
         session['total_guesses'] = 0
         session['guess_history'] = []
         session['won_status'] = 0
+        session['start_time'] = int(datetime.now().timestamp())
+        session['time_played'] = -1
+        
 
     session['today_seed'] = seed
 
@@ -211,14 +218,21 @@ def index_seed(var=""):
     session['generate'] = True
     session['generate_key'] = var
 
-    print("Today seed: " + session['today_seed'])
+    print("Today seed: " + str(session['today_seed']))
     print("Answer: " + str(get_truth_value()))
     print("Total guesses: " + str(session['total_guesses']))
 
-    return render_template('index.html', answer_value=get_truth_ans(), total=session['total_guesses'],
+    return render_template('index.html',
+                           answer_value=get_truth_ans(),
+                           total=session['total_guesses'],
                            history=get_feedback_color(),
-                           labels=get_guesses(), won_status=session["won_status"], numble_day_count="#mynumble: " + var,
-                           global_remaining_time=next_word_time(), dark_mode=session['dark_mode'])
+                           labels=get_guesses(),
+                           won_status=session["won_status"],
+                           numble_day_count="#mynumble: " + var,
+                           global_remaining_time=next_word_time(),
+                           dark_mode=session['dark_mode'],
+                           time_played=session['time_played'],
+                           avg_time_played=session['avg_time_played'])
 
 
 @app.route('/')
@@ -230,17 +244,24 @@ def index():
 
     if 'scores' not in session:
         session['scores'] = defaultdict(int)
+        session['avg_time_played'] = -1
 
     session['generate'] = False
 
     print("Answer: " + str(get_truth_value()))
     print("Total guesses: " + str(session['total_guesses']))
 
-    return render_template('index.html', answer_value=get_truth_ans(), total=session['total_guesses'],
+    return render_template('index.html',
+                           answer_value=get_truth_ans(),
+                           total=session['total_guesses'],
                            history=get_feedback_color(),
-                           labels=get_guesses(), won_status=session["won_status"],
+                           labels=get_guesses(),
+                           won_status=session["won_status"],
                            numble_day_count="# " + str(get_day_count()),
-                           global_remaining_time=next_word_time(), dark_mode=session['dark_mode'])
+                           global_remaining_time=next_word_time(),
+                           dark_mode=session['dark_mode'],
+                           time_played=session['time_played'],
+                           avg_time_played=session['avg_time_played'])
 
 
 @app.route('/getScores', methods=['GET'])
@@ -302,18 +323,29 @@ def submit():
         label_ls = [i[2] for i in sorted(results[0], key=lambda a: a[0])]
 
         if results[1] != -1:
+            # Next guess
             session['guess_history'].append([i for i in sorted(results[0], key=lambda a: a[0])])
 
         if results[1] == 1:
+            # Won
             session['won_status'] = results[1]
+            session['time_played'] = int(datetime.now().timestamp()) - session['start_time']
 
-            # Stats
             if (not session['generate']) and ('scores' in session):
                 session['scores'][session['today_seed']] = session['total_guesses']
 
                 add_score(session['total_guesses'])
 
+                total_won = len([numble for numble in session['scores'] if numble[-1]!=0])
+
+                if session['avg_time_played'] == -1:
+                    session['avg_time_played'] = session['time_played']
+                else:
+                    session['avg_time_played'] = (session['avg_time_played']*total_won + session['time_played'])/(total_won+1)
+
+
         elif session['total_guesses'] >= 6:
+            # Loss
             session['won_status'] = -1
 
             if (not session['generate']) and ('scores' in session):
@@ -324,8 +356,14 @@ def submit():
 
         print("Total guesses: " + str(session['total_guesses']))
 
-    return jsonify({'value': results[1], 'ls': ls, 'labels': label_ls, 'next_word_time': next_word_time(),
-                    'session_total': session['total_guesses'], 'equation': get_truth_value()})
+    return jsonify({'value': results[1],
+                    'ls':ls,
+                    'labels': label_ls,
+                    'next_word_time': next_word_time(),
+                    'session_total': session['total_guesses'],
+                    'equation': get_truth_value(),
+                    'time_played': session['time_played'],
+                    'avg_time_played': session['avg_time_played']})
 
 
 if __name__ == '__main__':
