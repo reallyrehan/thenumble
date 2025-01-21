@@ -254,6 +254,8 @@ def index():
 
     if 'scores' not in session:
         session['scores'] = defaultdict(int)
+
+    if 'avg_time_played' not in session:
         session['avg_time_played'] = -1
 
     session['generate'] = False
