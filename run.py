@@ -120,7 +120,7 @@ def get_seed():
     month = month if len(month) == 2 else '0' + month
     day = day if len(day) == 2 else '0' + day
 
-    return year + month + day + str(round(today.second/15)) ## Testing
+    return year + month + day #+ str(round(today.second/15)) ## Testing
 
 
 def get_day_count():
