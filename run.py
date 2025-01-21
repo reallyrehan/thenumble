@@ -4,6 +4,9 @@ from datetime import datetime
 from collections import defaultdict
 from utils import new_equation_generator
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 fa = FontAwesome(app)
@@ -117,7 +120,7 @@ def get_seed():
     month = month if len(month) == 2 else '0' + month
     day = day if len(day) == 2 else '0' + day
 
-    return year + month + day # + str(today.second) ## Testing
+    return year + month + day + str(round(today.second/15)) ## Testing
 
 
 def get_day_count():
@@ -148,10 +151,16 @@ def add_score(sc_int):
         pass
 
 # Testing method
-# @app.route('/reset')
-# def test_session():
-#     session.clear()
-#     return redirect('/')
+
+@app.route('/reset')
+def test_session():
+    if os.getenv('ENV')=='local':
+        print("Resetting session")
+        session.clear()
+        return redirect('/')
+    else:
+        print("Not allowed")
+        return redirect('/')
 
 def initialize_session(seed, new_session=True):
     if 'last_played' in session and session['last_played'] == seed:
@@ -232,7 +241,8 @@ def index_seed(var=""):
                            global_remaining_time=next_word_time(),
                            dark_mode=session['dark_mode'],
                            time_played=session['time_played'],
-                           avg_time_played=session['avg_time_played'])
+                           avg_time_played=-1,
+                           start_time=session['start_time'])
 
 
 @app.route('/')
@@ -251,6 +261,11 @@ def index():
     print("Answer: " + str(get_truth_value()))
     print("Total guesses: " + str(session['total_guesses']))
 
+    print("Time played: " + str(session['time_played']))
+    print(session['avg_time_played'])
+
+    print(session['start_time'])
+
     return render_template('index.html',
                            answer_value=get_truth_ans(),
                            total=session['total_guesses'],
@@ -261,7 +276,8 @@ def index():
                            global_remaining_time=next_word_time(),
                            dark_mode=session['dark_mode'],
                            time_played=session['time_played'],
-                           avg_time_played=session['avg_time_played'])
+                           avg_time_played=session['avg_time_played'],
+                           start_time=session['start_time'])
 
 
 @app.route('/getScores', methods=['GET'])
@@ -316,6 +332,9 @@ def submit():
             return jsonify({'value': [], 'ls': [], 'labels': [], 'next_word_time': next_word_time(),
                             'session_total': session['total_guesses']})
 
+        session['time_played'] = int(datetime.now().timestamp()) - session['start_time']
+        avg_time_played = session['avg_time_played']
+
         inp = request.json['guess'][0:request.json['cur_count']]
 
         results = checker(inp)
@@ -329,7 +348,6 @@ def submit():
         if results[1] == 1:
             # Won
             session['won_status'] = results[1]
-            session['time_played'] = int(datetime.now().timestamp()) - session['start_time']
 
             if (not session['generate']) and ('scores' in session):
                 session['scores'][session['today_seed']] = session['total_guesses']
@@ -341,7 +359,7 @@ def submit():
                 if session['avg_time_played'] == -1:
                     session['avg_time_played'] = session['time_played']
                 else:
-                    session['avg_time_played'] = (session['avg_time_played']*total_won + session['time_played'])/(total_won+1)
+                    session['avg_time_played'] = (session['avg_time_played']*(total_won-1) + session['time_played'])/(total_won)
 
 
         elif session['total_guesses'] >= 6:
@@ -363,7 +381,7 @@ def submit():
                     'session_total': session['total_guesses'],
                     'equation': get_truth_value(),
                     'time_played': session['time_played'],
-                    'avg_time_played': session['avg_time_played']})
+                    'avg_time_played':avg_time_played})
 
 
 if __name__ == '__main__':

@@ -1,0 +1,25 @@
+.timer-container {
+    font-family: 'Inter', -apple-system, sans-serif;
+    /* background-color: #f8f9fa; */
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); */
+    /* border: 1px solid #eee; */
+  }
+
+  .timer {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #2d3748;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.5px;
+  }
+
+  .timer-label {
+    font-size: 0.875rem;
+    color: #718096;
+    margin-left: 0.75rem;
+    font-weight: 400;
+  }
