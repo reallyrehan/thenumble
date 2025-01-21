@@ -72,6 +72,8 @@
         {% else %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/light.css') }}">
         {% endif %}
+
+        <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/timer.css') }}"> -->
         
     </head>
     <body>
@@ -218,7 +220,18 @@
                 
                 <div id = "youstats" class = "modal-body">
                     <div class = "container">
+                        <div style="display: none;" id = "todaystats">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <p><span id="your_timeplayed_minutes"></span></p>
+                                </div>
+                        
+                            </div>
+                            <hr>
+                        </div>
                         <div class = "row ml-4 mr-4">
+                            
+                            <p></p>
                             <div class = "col-12 text-center">
                                 <h5 ><b>DAILY STATISTICS</b></h5>
                             </div>
@@ -241,9 +254,14 @@
                             <div class = "col-4 text-center" style="margin-top:-10px">
                                 <small>Win %</small>
                             </div>
+                            <br><br>
+                            <div class = "col-12 text-center" style="margin-top:-10px">
+                                <small>Avg. Win Time : </small><b id ="avg_time_played_span">?</b>
+                            </div>
                             
                         </div>
                         <hr>
+
                         <div class = "col-12 text-center">
                             <p>Guess Distribution</p>
                         </div>
@@ -429,10 +447,16 @@
             
             <hr style="width: 15rem;margin-top:0;margin-bottom:5px;">
         </div>
+
         <div class = "container d-flex justify-content-center ">
             <button type="button" id="numbleAlive" class="btn btn-sm btn-outline-secondary">Keep Numble alive!</button>
 
         </div>
+
+        <!-- <div class="container d-flex justify-content-center timer-container">
+            <div class="timer" id="timer">00:00:00</div>
+            <div class="timer-label">elapsed</div>
+          </div> -->
 
         <div class = "container d-flex justify-content-center ">
     
@@ -627,8 +651,32 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-
 <script>
+    
+//     const startTime = {{start_time}}*1000;
+//     // console.log(startTime)
+
+//     // console.log({{start_time}})
+    
+// function updateTimer() {
+//   const elapsedTime = Math.floor((Date.now() - startTime) / 1000); // Convert to seconds
+  
+//   // Calculate hours, minutes, seconds
+//   const hours = Math.floor(elapsedTime / 3600);
+//   const minutes = Math.floor((elapsedTime % 3600) / 60);
+//   const seconds = elapsedTime % 60;
+
+//   // Format with leading zeros
+//   const format = (num) => String(num).padStart(2, '0');
+  
+//   // Update the display
+//   document.getElementById('timer').textContent = 
+//     `${format(hours)}:${format(minutes)}:${format(seconds)}`;
+// }
+
+// // Update every second
+// setInterval(updateTimer, 1000);
+// updateTimer(); // Initial 
 
     // PRACTICE AREA
 
@@ -805,6 +853,84 @@
     //     this.classList.remove('btn-outline-secondary')
     // });
 
+    var showTodayStats = function(time_played, guesses, avg_time_played){
+        
+        document.getElementById('todaystats').style.display = 'block';
+
+        let time_str = "Today, it took you <b>";
+       
+        if (time_played < 60){
+            time_str += " just "+time_played + " seconds 🚀";
+                }
+        else{
+            if (time_played <120){
+                time_str += "1 minute 💯";
+            }
+            else{
+                time_str += Math.floor(time_played/60) + " minutes ⏳";
+            }
+        }
+        time_str += "</b><br>"
+
+        let diff_str = "";
+
+        if (avg_time_played != -1) {
+            console.log(time_played)
+            console.log(avg_time_played)
+            
+            let diff = Math.abs(((time_played.toFixed(0) - avg_time_played.toFixed(0)) / avg_time_played.toFixed(0)) * 100);
+            
+            let diff_str = "You were <b>"+diff.toFixed(0) + "%";
+
+            if (time_played > avg_time_played) {
+                diff_str = diff_str + " slower 🐢</b> than your average";
+                
+            }
+            else if (time_played == avg_time_played){
+                diff_str = diff_str + " on par 🎯</b> with your average";
+            }
+            else{
+                diff_str = diff_str + " faster 💨</b> than your average";
+            }
+            time_str = time_str + "" + diff_str;
+            
+        }
+
+        time_str += ""
+
+        
+        
+
+        // let guesses_str = "";
+
+        // if (guesses == 1){
+        //     guesses_str = guesses + " guess 🤯";
+        // }
+        // else if (guesses == 2){
+        //     guesses_str = guesses + " guesses 🤩";
+        // }
+        // else if (guesses == 3){
+        //     guesses_str = guesses + " guesses 😎";
+        // }
+        // else if (guesses == 4){
+        //     guesses_str = guesses + " guesses 😏";
+        // }
+        // else if (guesses == 5){
+        //     guesses_str = guesses + " guesses 😐";
+        // }
+        // else if (guesses == 6){
+        //     guesses_str = guesses + " guesses 😔";
+        // }
+
+                // console.log(response)
+        
+        document.getElementById('your_timeplayed_minutes').innerHTML = time_str;
+        console.log(time_str)
+        // $('#your_timeplayed_minutes').innerHTML = time_str;
+        // $('#your_timeplayed_guess_number').html(guesses_str)
+         
+    };
+
     var getYourStats = function(){
         $.ajax({
             url: '/getScores',
@@ -862,6 +988,19 @@
     
     var cur_count = 0;
     var total_guesses =  {{ total }};
+    var time_played = {{ time_played }};
+
+    
+    var avg_time_played = {{ avg_time_played }};
+
+    if (avg_time_played != -1){
+        let avg_mins = Math.floor(avg_time_played/60);
+        let avg_secs = Math.round(avg_time_played%60);
+
+        let avg_time_str = avg_mins+"m "+avg_secs+"s";
+        document.getElementById('avg_time_played_span').innerHTML = avg_time_str;
+    }
+
     var numble_day_count = "{{numble_day_count}}";
 
     var guess_history = {{ history }};
@@ -1115,6 +1254,7 @@
         }
     if (game_end_status==1){
         winFunction(global_remaining_time);
+        showTodayStats(time_played,total_guesses, -1);
     }
     else if (game_end_status==-1){
         loseFunction(global_remaining_time);
@@ -1208,6 +1348,15 @@ function checkKey(e) {
 					success: function(data) {
 
                         total_guesses = data['session_total']
+                        time_played = data['time_played']
+                        avg_time_played = data['avg_time_played']
+
+                        gtag('event', 'game_guess', {
+                            'total_guesses': total_guesses,
+                            'time_played': time_played
+                        });
+
+                        console.log(time_played)
                         
                         // console.log(data)
                         if (data['value']==-1){
@@ -1286,7 +1435,14 @@ function checkKey(e) {
                                 // console.log(data["next_word_time"])
                                 // nextWordTime();
 
-                                
+                                // GA event for winning the game
+                                // console.log(time_played)
+                                gtag('event', 'game_complete', {
+                                    'win_status': 0,
+                                    'total_guesses': total_guesses,
+                                    'time_played': time_played,
+                                    'avg_time_played': avg_time_played
+                                });
 
                                 loseFunction("<br>in <b>"+data['next_word_time']+"</b><br>Today's equation was: <br><b>"+data['equation']+"</b>");
                                 getYourStats();
@@ -1348,12 +1504,20 @@ function checkKey(e) {
 
 
 
-                            // document.getElementById('win').classList.add('badge','badge-danger');
+                            // GA event for winning the game
+                            console.log("WON GAME EVENT")
+                            gtag('event', 'game_complete', {
+                                'win_status': 1,
+                                'total_guesses': total_guesses,
+                                'time_played': time_played,
+                                'avg_time_played': avg_time_played
+                            });
 
-
-                            // winFunction(data['next_word_time']);
                             winFunction("<br>in <b>"+data['next_word_time']+"</b>");
+                            showTodayStats(time_played,total_guesses,avg_time_played);
                             getYourStats();
+
+
                             // $('#scoreModal').modal('show');
                             setTimeout(function(){
                                     $('#scoreModal').modal('show');
