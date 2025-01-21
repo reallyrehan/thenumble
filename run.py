@@ -258,6 +258,12 @@ def index():
     if 'avg_time_played' not in session:
         session['avg_time_played'] = -1
 
+    if 'start_time' not in session:
+        session['start_time'] = int(datetime.now().timestamp())
+
+    if 'time_played' not in session:
+        session['time_played'] = -1
+
     session['generate'] = False
 
     print("Answer: " + str(get_truth_value()))
