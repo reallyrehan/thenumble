@@ -872,34 +872,31 @@
         }
         time_str += "</b><br>"
 
-        let diff_str = "";
+
+        let am = Math.floor(avg_time_played/60);
+        let as = Math.round(avg_time_played%60);
+
+        let avg_t_str = am+"m "+as+"s";
 
         if (avg_time_played != -1) {
-            console.log(time_played)
-            console.log(avg_time_played)
             
-            let diff = Math.abs(((time_played.toFixed(0) - avg_time_played.toFixed(0)) / avg_time_played.toFixed(0)) * 100);
-            
-            let diff_str = "You were <b>"+diff.toFixed(0) + "%";
+            let diff_str = "You were <b>";
 
-            if (time_played > avg_time_played) {
-                diff_str = diff_str + " slower 🐢</b> than your average";
+            if (time_played.toFixed(0) == avg_time_played.toFixed(0)){
+                
+                diff_str+= + " on par 🎯</b> with your average";
+            }
+            else if (time_played > avg_time_played) {
+                diff_str+= ((time_played / avg_time_played)-1).toFixed(1) +"x slower 🐢</b> than your average of "+avg_t_str;
                 
             }
-            else if (time_played == avg_time_played){
-                diff_str = diff_str + " on par 🎯</b> with your average";
-            }
             else{
-                diff_str = diff_str + " faster 💨</b> than your average";
+                diff_str+= ((avg_time_played / time_played)-1).toFixed(1) +"x faster 💨</b> than your average of "+avg_t_str;
             }
-            time_str = time_str + "" + diff_str;
+
+            time_str+= "" + diff_str;
             
         }
-
-        time_str += ""
-
-        
-        
 
         // let guesses_str = "";
 
@@ -1437,8 +1434,11 @@ function checkKey(e) {
 
                                 // GA event for winning the game
                                 // console.log(time_played)
-                                gtag('event', 'game_complete', {
-                                    'win_status': 0,
+                                gtag('event','game_complete',{
+                                    'value':0
+                                })
+                                gtag('event', 'game_lost_event', {
+                                    'value': total_guesses,
                                     'total_guesses': total_guesses,
                                     'time_played': time_played,
                                     'avg_time_played': avg_time_played
@@ -1505,9 +1505,11 @@ function checkKey(e) {
 
 
                             // GA event for winning the game
-                            console.log("WON GAME EVENT")
-                            gtag('event', 'game_complete', {
-                                'win_status': 1,
+                            gtag('event','game_complete',{
+                                    'value':1
+                                })
+                            gtag('event', 'game_won_event', {
+                                'value': total_guesses,
                                 'total_guesses': total_guesses,
                                 'time_played': time_played,
                                 'avg_time_played': avg_time_played
