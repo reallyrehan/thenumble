@@ -878,19 +878,21 @@
             console.log(time_played)
             console.log(avg_time_played)
             
-            let diff = Math.abs(((time_played.toFixed(0) - avg_time_played.toFixed(0)) / avg_time_played.toFixed(0)) * 100);
-            
-            let diff_str = "You were <b>"+diff.toFixed(0) + "%";
 
+            
+            let diff_str = "You were <b>";
             if (time_played > avg_time_played) {
-                diff_str = diff_str + " slower 🐢</b> than your average";
+                let diff = time_played / avg_time_played;
+                diff_str = diff_str + diff.toFixed(1) +" times slower 🐢</b> than your previous average.";
                 
             }
             else if (time_played == avg_time_played){
+                
                 diff_str = diff_str + " on par 🎯</b> with your average";
             }
             else{
-                diff_str = diff_str + " faster 💨</b> than your average";
+                let diff = avg_time_played / time_played;
+                diff_str = diff_str + diff.toFixed(1) +" times faster 💨</b> than your previous average.";
             }
             time_str = time_str + "" + diff_str;
             
