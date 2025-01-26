@@ -1434,6 +1434,9 @@ function checkKey(e) {
 
                                 // GA event for winning the game
                                 // console.log(time_played)
+                                gtag('event','game_complete',{
+                                    'value':0
+                                })
                                 gtag('event', 'game_lost_event', {
                                     'value': total_guesses,
                                     'total_guesses': total_guesses,
@@ -1502,6 +1505,9 @@ function checkKey(e) {
 
 
                             // GA event for winning the game
+                            gtag('event','game_complete',{
+                                    'value':1
+                                })
                             gtag('event', 'game_won_event', {
                                 'value': total_guesses,
                                 'total_guesses': total_guesses,
