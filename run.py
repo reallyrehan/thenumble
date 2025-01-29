@@ -30,32 +30,52 @@ def get_redis_stats():
         return jsonify({'error': 'Session not initialized'}), 400
 
 
-def run_as_thread(func):
-    def wrapper(*args, **kwargs):
-        thread = Thread(target=func, args=args, kwargs=kwargs)
-        thread.start()
-    return wrapper
+    get_all_redis = redis_connector.mget(['total_games', 'total_wins', 'total_losses', 'total_guesses', 'total_time_played',
+                                          'today_games', 'today_wins', 'today_losses', 'today_guesses', 'today_time_played'])
+    
+    return jsonify({
+        'total_games': int(get_all_redis[0]),
+        'total_wins': int(get_all_redis[1]),
+        'total_losses': int(get_all_redis[2]),
+        'total_guesses': int(get_all_redis[3]),
+        'total_time_played': int(get_all_redis[4]),
+        'today_games': int(get_all_redis[5]),
+        'today_wins': int(get_all_redis[6]),
+        'today_losses': int(get_all_redis[7]),
+        'today_guesses': int(get_all_redis[8]),
+        'today_time_played': int(get_all_redis[9])
+    })
 
-@run_as_thread
+
+# def run_as_thread(func):
+#     def wrapper(*args, **kwargs):
+#         thread = Thread(target=func, args=args, kwargs=kwargs)
+#         thread.start()
+#     return wrapper
+
+# @run_as_thread
 def set_today_stats(today_seed,
                     game_status,
                     total_guesses,
                     time_played):
     try:
         print("Setting total stats")
-        redis_connector.incr('total_games')
-        redis_connector.incr('total_wins') if game_status == 1 else redis_connector.incr('total_losses')
-        redis_connector.incr('total_guesses', total_guesses)
-        redis_connector.incr('total_time_played', time_played)
-        
+
         today_seed_redis = redis_connector.get('today_seed').decode('utf-8')
 
-        if today_seed_redis == today_seed:
-            print("Setting today stats")
-            redis_connector.incr('today_games')
-            redis_connector.incr('today_wins') if game_status == 1 else redis_connector.incr('today_losses')
-            redis_connector.incr('today_guesses', total_guesses)
-            redis_connector.incr('today_time_played', time_played)
+        with redis_connector.pipeline() as pipe:
+            pipe.incr('total_games')
+            pipe.incr('total_wins') if game_status == 1 else pipe.incr('total_losses')
+            pipe.incr('total_guesses', total_guesses)
+            pipe.incr('total_time_played', time_played)
+
+            if today_seed_redis == today_seed:
+                print("Setting today stats")
+                pipe.incr('today_games')
+                pipe.incr('today_wins') if game_status == 1 else pipe.incr('today_losses')
+                pipe.incr('today_guesses', total_guesses)
+                pipe.incr('today_time_played', time_played)
+            pipe.execute()
     except:
         print("Problem setting stats for redis")
         pass
@@ -78,12 +98,16 @@ def initialise_redis_seed(seed):
             print("Today seed already exists in redis")
         else:
             print("Initialising redis for today seed")
-            redis_connector.set('today_seed', seed)
-            redis_connector.set('today_games', 0)
-            redis_connector.set('today_wins', 0)
-            redis_connector.set('today_losses', 0)
-            redis_connector.set('today_guesses', 0)
-            redis_connector.set('today_time_played', 0)
+
+            redis_connector.mset({
+                'today_seed': seed,
+                'today_games': 0,
+                'today_wins': 0,
+                'today_losses': 0,
+                'today_guesses': 0,
+                'today_time_played': 0
+            })
+
     except:
         print("Problem initialising redis seed")
         pass
@@ -473,5 +497,4 @@ def submit():
 
 
 if __name__ == '__main__':
-    init_redis()
     app.run(host='localhost', debug=True, port=5001)  # FIX
