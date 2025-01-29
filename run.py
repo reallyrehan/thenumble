@@ -5,6 +5,9 @@ from collections import defaultdict
 from utils import new_equation_generator
 import os
 from dotenv import load_dotenv
+import urllib.parse
+import redis
+from threading import Thread
 
 load_dotenv()
 
@@ -18,19 +21,8 @@ numble_score_distribution = {}
 char_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '+', '-', '/', '*']
 
 # Connect to Redis
-import os
-import urllib.parse
-import redis
-from threading import Thread
-
-redis_connector = None
-
-def init_redis():
-    global redis_connector
-
-    url = urllib.parse.urlparse(os.environ.get('REDISCLOUD_URL'))
-    redis_connector = redis.Redis(host=url.hostname, port=url.port, password=url.password)
-
+url = urllib.parse.urlparse(os.environ.get('REDISCLOUD_URL'))
+redis_connector = redis.Redis(host=url.hostname, port=url.port, password=url.password)
 
 @app.route('/getGlobalStats', methods=['GET'])
 def get_redis_stats():
@@ -481,4 +473,5 @@ def submit():
 
 
 if __name__ == '__main__':
+    init_redis()
     app.run(host='localhost', debug=True, port=5001)  # FIX
