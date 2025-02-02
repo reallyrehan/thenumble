@@ -24,36 +24,53 @@ char_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '+', '-', '/', '*
 url = urllib.parse.urlparse(os.environ.get('REDISCLOUD_URL'))
 redis_connector = redis.Redis(host=url.hostname, port=url.port, password=url.password)
 
-@app.route('/getGlobalStats', methods=['GET'])
+@app.route('/getRedisStats', methods=['GET'])
 def get_redis_stats():
     if 'today_seed' not in session:
         return jsonify({'error': 'Session not initialized'}), 400
 
+    best_time = False
 
     get_all_redis = redis_connector.mget(['total_games', 'total_wins', 'total_losses', 'total_guesses', 'total_time_played',
-                                          'today_games', 'today_wins', 'today_losses', 'today_guesses', 'today_time_played'])
+                                          'today_games', 'today_wins', 'today_losses', 'today_guesses', 'today_time_played','today_min_time_played'])
     
+    if int(get_all_redis[4]) == 0:
+        total_avg_time_played = -1
+    else:
+        total_avg_time_played = int(get_all_redis[4]) / int(get_all_redis[0])
+
+    if int(get_all_redis[9]) == 0:
+        today_avg_time_played = -1
+    else:
+        today_avg_time_played = int(get_all_redis[9]) / int(get_all_redis[5])
+
+    if get_all_redis[10] is None:
+        today_min_time_played = -1
+    else:
+        today_min_time_played = int(get_all_redis[10])
+
+    if session.get('won_status',0) == 1:
+        if session.get('time_played',0) == today_min_time_played:
+            best_time = True
+
     return jsonify({
         'total_games': int(get_all_redis[0]),
         'total_wins': int(get_all_redis[1]),
         'total_losses': int(get_all_redis[2]),
         'total_guesses': int(get_all_redis[3]),
         'total_time_played': int(get_all_redis[4]),
+        'total_avg_time_played': total_avg_time_played,
         'today_games': int(get_all_redis[5]),
         'today_wins': int(get_all_redis[6]),
         'today_losses': int(get_all_redis[7]),
         'today_guesses': int(get_all_redis[8]),
-        'today_time_played': int(get_all_redis[9])
+        'today_time_played': int(get_all_redis[9]),
+        'today_avg_time_played': today_avg_time_played,
+        'today_min_time_played': today_min_time_played,
+        'today_best_time': best_time
     })
 
 
-# def run_as_thread(func):
-#     def wrapper(*args, **kwargs):
-#         thread = Thread(target=func, args=args, kwargs=kwargs)
-#         thread.start()
-#     return wrapper
-
-# @run_as_thread
 def set_today_stats(today_seed,
                     game_status,
                     total_guesses,
@@ -61,7 +78,14 @@ def set_today_stats(today_seed,
     try:
         print("Setting total stats")
 
-        today_seed_redis = redis_connector.get('today_seed').decode('utf-8')
+        today_seed_redis, today_min_time_played = redis_connector.mget(['today_seed','today_min_time_played'])
+
+        today_seed_redis = today_seed_redis.decode('utf-8')
+
+        if today_min_time_played is not None:
+            today_min_time_played = int(today_min_time_played)
+        else:
+            today_min_time_played = -1
 
         with redis_connector.pipeline() as pipe:
             pipe.incr('total_games')
@@ -75,9 +99,18 @@ def set_today_stats(today_seed,
                 pipe.incr('today_wins') if game_status == 1 else pipe.incr('today_losses')
                 pipe.incr('today_guesses', total_guesses)
                 pipe.incr('today_time_played', time_played)
+
+                print(time_played)
+                print(today_min_time_played)
+                print("HELLO")
+
+                if today_min_time_played==-1 or time_played <= today_min_time_played:
+                    pipe.set('today_min_time_played', time_played)
+                    
             pipe.execute()
-    except:
+    except Exception as e:
         print("Problem setting stats for redis")
+        raise e
         pass
 
 
@@ -105,7 +138,8 @@ def initialise_redis_seed(seed):
                 'today_wins': 0,
                 'today_losses': 0,
                 'today_guesses': 0,
-                'today_time_played': 0
+                'today_time_played': 0,
+                'today_min_time_played': -1
             })
 
     except:
@@ -263,7 +297,6 @@ def initialize_session(seed, new_session=True):
         session['won_status'] = 0
         session['start_time'] = int(datetime.now().timestamp())
         session['time_played'] = -1
-        
 
     session['today_seed'] = seed
 
