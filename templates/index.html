@@ -218,114 +218,210 @@
         
              
                 
-                <div id = "youstats" class = "modal-body">
-                    <div class = "container">
-                        <div style="display: none;" id = "todaystats">
-                            <div class="row">
-                                <div class="col-12 text-center">
-                                    <p><span id="your_timeplayed_minutes"></span></p>
-                                </div>
-                        
-                            </div>
-                            <hr>
-                        </div>
-                        <div class = "row ml-4 mr-4">
-                            
-                            <p></p>
-                            <div class = "col-12 text-center">
-                                <h5 ><b>DAILY STATISTICS</b></h5>
-                            </div>
-                            <div class = "col-4 text-center">
-                                <h1 id="your_score_played">10</h1>
-                            </div>
-                            <div class = "col-4 text-center">
-                                <h1 id = "your_score_won">8</h1>
-                            </div>
-                            <div class = "col-4 text-center">
-                                <h1 id = "your_score_percent">80</h1>
-                            </div>
-                            
-                            <div class = "col-4 text-center" style="margin-top:-10px">
-                                <small>Played</small>
-                            </div>
-                            <div class = "col-4 text-center" style="margin-top:-10px">
-                                <small>Won</small>
-                            </div>
-                            <div class = "col-4 text-center" style="margin-top:-10px">
-                                <small>Win %</small>
-                            </div>
-                            <br><br>
-                            <div class = "col-12 text-center" style="margin-top:-10px">
-                                <small>Avg. Win Time : </small><b id ="avg_time_played_span">?</b>
-                            </div>
-                            
-                        </div>
-                        <hr>
+                <ul class="nav nav-tabs" id="statsTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link" id="daily-stats-tab" data-toggle="tab" href="#daily-stats" role="tab" aria-controls="daily-stats" aria-selected="true">Your Stats</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" id="overall-stats-today-tab" data-toggle="tab" href="#overall-stats-today" role="tab" aria-controls="overall-stats-today" aria-selected="false">Overall <span class="badge badge-danger">new</span></a>
+                    </li>
 
-                        <div class = "col-12 text-center">
-                            <p>Guess Distribution</p>
+                </ul>
+                <div class="tab-content" id="statsTabContent">
+                    <div class="tab-pane fade" id="daily-stats" role="tabpanel" aria-labelledby="daily-stats-tab">
+                        <div id="youstats" class="modal-body">
+                            <div class="container">
+                                <div style="display: none;" id="todaystats">
+                                    <div class="row">
+                                        <div class="col-12 text-center">
+                                            <p><span id="your_timeplayed_minutes"></span></p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                                <div class="row ml-4 mr-4">
+                                    <p></p>
+                                    <div class="col-12 text-center">
+                                        <h5><b>DAILY STATISTICS</b></h5>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <h1 id="your_score_played">10</h1>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <h1 id="your_score_won">8</h1>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <h1 id="your_score_percent">80</h1>
+                                    </div>
+                                    <div class="col-4 text-center" style="margin-top:-10px">
+                                        <small>Played</small>
+                                    </div>
+                                    <div class="col-4 text-center" style="margin-top:-10px">
+                                        <small>Won</small>
+                                    </div>
+                                    <div class="col-4 text-center" style="margin-top:-10px">
+                                        <small>Win %</small>
+                                    </div>
+                                    <br><br>
+                                    <div class="col-12 text-center" style="margin-top:-10px">
+                                        <small>Avg. Win Time : </small><b id="avg_time_played_span">?</b>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="col-12 text-center">
+                                    <p>Guess Distribution</p>
+                                </div>
+                            </div>
+                            <table>
+                                <tr>
+                                    <td>1</td>
+                                    <td>
+                                        <button id="your_guess_1" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>
+                                        <button id="your_guess_2" class="btn btn-secondary ml-4" style="padding-left:12px;border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>
+                                        <button id="your_guess_3" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>
+                                        <button id="your_guess_4" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>
+                                        <button id="your_guess_5" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>
+                                        <button id="your_guess_6" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                                <tr style="display: none;">
+                                    <td>X</td>
+                                    <td>
+                                        <button id="your_guess_7" class="btn btn-secondary ml-4" style="padding-left:12px;border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
-                    <!-- <p>hello</p>
-                    <ul>
-                        <ol class="text-dark"><button class = "btn btn-primary" >0</button></ol>
+                    <div class="tab-pane fade show active" id="overall-stats-today" role="tabpanel" aria-labelledby="overall-stats-today-tab">
+                        <div id="overallstats" class="modal-body">
+                            <div class="container">
+                                <div class="row ml-4 mr-4">
+                                    <p></p>
+                                    <div class="col-12 text-center">
+                                        <h5><b>TODAY</b></h5>
+                                    </div>
+                                    <div class="col-12 text-center" style="margin-top:-10px">
+                                        <small>All games played today by Numble-rs</small>
 
-                    </ul> -->
-                    
-                    <table>
-                        <tr>
-                          <td>1</td>
-                          <td>
-                              <button id="your_guess_1" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0;">0</button>
-                        
-                          </td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>
-                                <button id="your_guess_2" class ="btn btn-secondary ml-4 " style="padding-left:12px;border-radius: 0; ">0</button>
-                          
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>3</td>
-                            <td>
-                                <button id="your_guess_3" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0;">0</button>
-                          
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>4</td>
-                            <td>
-                                <button id="your_guess_4" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0;">0</button>
-                          
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>5</td>
-                            <td>
-                                <button id="your_guess_5" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0; ">0</button>
-                          
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>6</td>
-                            <td>
-                                <button id="your_guess_6" class ="btn btn-secondary ml-4 " style="padding-left:12px; border-radius: 0;">0</button>
-                          
-                            </td>
-                          </tr>
-                          <tr style = "display: none;">
-                            <td>X</td>
-                            <td>
-                                <button id="your_guess_7" class ="btn btn-secondary ml-4 " style="padding-left:12px;border-radius: 0; ">0</button>
-                          
-                            </td>
-                          </tr>
-                        
-                     
-                      </table>
+                                    </div>
 
+                                    <div class="col-4 text-center">
+                                        <h1 id="overall_score_played">100</h1>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <h1 id="overall_score_won">80</h1>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <h1 id="overall_score_percent">80</h1>
+                                    </div>
+                                    <div class="col-4 text-center" style="margin-top:-10px">
+                                        <small>Played</small>
+                                    </div>
+                                    <div class="col-4 text-center" style="margin-top:-10px">
+                                        <small>Won</small>
+                                    </div>
+                                    <div class="col-4 text-center" style="margin-top:-10px">
+                                        <small>Win %</small>
+                                    </div>
+                                    <br><br>
+                                    <div class="col-4 text-center" style="margin-top:-10px">
+                                        <small>Avg. Guesses</small>
+                                    </div>
+                                    <div class="col-4 text-center" style="margin-top:-10px">
+                                        <small>Avg. Win Time</small>
+                                    </div>
+                                    <div class="col-4 text-center" style="margin-top:-10px">                                        
+                                        <small>Best Time</small>
+                                    </div>
+                                    <div class="col-4 text-center" >
+                                        <b id="overall_avg_guess">?</b>
+                                    </div>
+                                    <div class="col-4 text-center" >
+                                        <b id="overall_avg_time_played_span">?</b>
+                                        
+                                    </div>
+                                    <div class="col-4 text-center" >
+                                        <b id="overall_min_time_played_span">?</b>
+                                    </div>
+
+                                </div>
+                                <hr>
+                                <!-- <div class="col-12 text-center">
+                                    <p>Guess Distribution</p>
+                                </div> -->
+                            </div>
+                            <!-- <table>
+                                <tr>
+                                    <td>1</td>
+                                    <td>
+                                        <button id="overall_guess_1" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>
+                                        <button id="overall_guess_2" class="btn btn-secondary ml-4" style="padding-left:12px;border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>
+                                        <button id="overall_guess_3" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>
+                                        <button id="overall_guess_4" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>
+                                        <button id="overall_guess_5" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>
+                                        <button id="overall_guess_6" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                                <tr style="display: none;">
+                                    <td>X</td>
+                                    <td>
+                                        <button id="overall_guess_7" class="btn btn-secondary ml-4" style="padding-left:12px;border-radius: 0;">0</button>
+                                    </td>
+                                </tr>
+                            </table> -->
+                        </div>
+                    </div>
 
                 </div>
 
@@ -441,11 +537,15 @@
                     <button class="btn btn-lg">☽</button>
                 </a>
             </h1>
-            <small style="font-size:1rem;" id = "notif">{{numble_day_count}}</small>
+            <small style="font-size:0.8rem;" id = "notif">{{numble_day_count}}</small> |
+            <!-- <small style="font-size:1rem;" id = "today_games"><sup>Won </sup><btn class="btn btn-sm btn-success">25</btn></small> -->
+            <!-- <small style="font-size:1rem;" id = "today_games"><btn class="btn btn-sm btn-danger">2</btn><sup> Lost</sup></small> -->
+            
+
                 <!-- <p style = "font-size:0.8rem; "><small>by</small></p>
                 <a href="https://github.com/reallyrehan" target="_blank" style = 'color:black;font-size:1rem;'> <p >Rehan Ahmed</p></a> -->
             
-            <hr style="width: 15rem;margin-top:0;margin-bottom:5px;">
+            <hr style="width: 15rem;margin-top:5px;margin-bottom:5px;">
         </div>
 
         <div class = "container d-flex justify-content-center ">
@@ -715,7 +815,36 @@
 
     }
 
+    var getRedisStats = function(){
+    $.ajax({
+        url: '/getRedisStats',
+        type: 'GET',
+        success: function(response){
+            console.log("CALLING REDIS")
+            // document.getElementById('today_games').innerHTML = response['today_games'];
+            document.getElementById('overall_score_played').innerHTML = response['today_games'];
+            document.getElementById('overall_score_won').innerHTML = response['today_wins'];
+            document.getElementById('overall_score_percent').innerHTML = ((response['today_wins']/response['today_games'])*100).toFixed(0);
 
+            if (response['today_wins'] > 0){
+                // Get the average number of guesses
+                let calc_avg = (response['today_guesses_win']/response['today_wins']).toFixed(1);
+                document.getElementById('overall_avg_guess').innerHTML = calc_avg;
+
+                // Get the average time played
+                document.getElementById('overall_avg_time_played_span').innerHTML = convertTimeToMinutes(response['today_time_played_win']/response['today_wins']);
+
+                txt =  convertTimeToMinutes(response['today_min_time_played_win']);
+
+                if (response['today_best_time']){
+                    txt+= ' <span class="badge badge-success">YOU</span>';
+                }
+                document.getElementById('overall_min_time_played_span').innerHTML = txt;
+            }
+
+            // document.getElementById('today_avg_time').innerHTML = response['today_avg_time'];
+
+        }})};
 
 
 
@@ -834,6 +963,8 @@
 
     $('#statsButton').click(function(){
         // console.log("SUP")
+
+        getRedisStats();
         $('#scoreModal').modal('show');
         
 
@@ -852,6 +983,11 @@
     //     this.classList.add('text-white')
     //     this.classList.remove('btn-outline-secondary')
     // });
+    var convertTimeToMinutes = function(time){
+        let mins = Math.floor(time/60);
+        let secs = Math.round(time%60);
+        return mins+"m "+secs+"s";
+    }
 
     var showTodayStats = function(time_played, guesses, avg_time_played){
         
@@ -872,11 +1008,8 @@
         }
         time_str += "</b><br>"
 
+        let avg_t_str = convertTimeToMinutes(avg_time_played)
 
-        let am = Math.floor(avg_time_played/60);
-        let as = Math.round(avg_time_played%60);
-
-        let avg_t_str = am+"m "+as+"s";
 
         if (avg_time_played != -1) {
             
@@ -1093,6 +1226,7 @@
 
 
     var winFunction = function(remainingTime){
+        
         var x;
         for ( x=0;x<15;x++){
             document.getElementsByClassName('box2')[x].classList.remove('btn-secondary','btn-success','btn-warning','btn-dark')
@@ -1123,6 +1257,7 @@
     }
 
     var loseFunction = function(remainingTime){
+        
         var x;
         // for (var i =0;i<5;i++){
         //     document.getElementsByClassName('box2')[i].style.display = 'none';
@@ -1250,10 +1385,12 @@
 
         }
     if (game_end_status==1){
+        
         winFunction(global_remaining_time);
         showTodayStats(time_played,total_guesses, -1);
     }
     else if (game_end_status==-1){
+        
         loseFunction(global_remaining_time);
     }
 
@@ -1444,7 +1581,9 @@ function checkKey(e) {
                                     'avg_time_played': avg_time_played
                                 });
 
+                                
                                 loseFunction("<br>in <b>"+data['next_word_time']+"</b><br>Today's equation was: <br><b>"+data['equation']+"</b>");
+                                getRedisStats();
                                 getYourStats();
                                 // $('#scoreModal').modal('show');
                                 setTimeout(function(){
@@ -1516,6 +1655,7 @@ function checkKey(e) {
                             });
 
                             winFunction("<br>in <b>"+data['next_word_time']+"</b>");
+                            getRedisStats();
                             showTodayStats(time_played,total_guesses,avg_time_played);
                             getYourStats();
 
@@ -1544,6 +1684,14 @@ function checkKey(e) {
     }
 }
 getYourStats();
+
+
+// Redis Stats
+
+
+
+        // getRedisStats()
+
     </script>
 
 
