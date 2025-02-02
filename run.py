@@ -22,63 +22,98 @@ char_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '+', '-', '/', '*
 
 # Connect to Redis
 url = urllib.parse.urlparse(os.environ.get('REDISCLOUD_URL'))
-redis_connector = redis.Redis(host=url.hostname, port=url.port, password=url.password)
+redis_connector = redis.Redis(host=url.hostname,
+                              port=url.port,
+                              password=url.password)
+
+NUMBLE_ENV_VAR = os.getenv('NUMBLE_ENV', 'local')
+
+print(f"NUMBLE_ENV: {NUMBLE_ENV_VAR}")
 
 @app.route('/getRedisStats', methods=['GET'])
 def get_redis_stats():
     if 'today_seed' not in session:
         return jsonify({'error': 'Session not initialized'}), 400
 
-    best_time = False
+    try:
+        best_time = False
 
-    get_all_redis = redis_connector.mget(['total_games', 'total_wins', 'total_losses', 'total_guesses', 'total_time_played',
-                                          'today_games', 'today_wins', 'today_losses', 'today_guesses', 'today_time_played','today_min_time_played'])
-    
-    if int(get_all_redis[4]) == 0:
-        total_avg_time_played = -1
-    else:
-        total_avg_time_played = int(get_all_redis[4]) / int(get_all_redis[0])
+        get_all_redis = redis_connector.mget([f'{NUMBLE_ENV_VAR}_total_games',
+                                            f'{NUMBLE_ENV_VAR}_total_wins',
+                                            f'{NUMBLE_ENV_VAR}_total_losses',
+                                            f'{NUMBLE_ENV_VAR}_total_guesses',
+                                            f'{NUMBLE_ENV_VAR}_total_time_played',
+                                            f'{NUMBLE_ENV_VAR}_today_games',
+                                            f'{NUMBLE_ENV_VAR}_today_wins',
+                                            f'{NUMBLE_ENV_VAR}_today_losses',
+                                            f'{NUMBLE_ENV_VAR}_today_guesses',
+                                            f'{NUMBLE_ENV_VAR}_today_time_played',
+                                            f'{NUMBLE_ENV_VAR}_today_min_time_played'])
+        
+        if int(get_all_redis[4]) == 0:
+            total_avg_time_played = -1
+        else:
+            total_avg_time_played = int(get_all_redis[4]) / int(get_all_redis[0])
 
-    if int(get_all_redis[9]) == 0:
-        today_avg_time_played = -1
-    else:
-        today_avg_time_played = int(get_all_redis[9]) / int(get_all_redis[5])
+        if int(get_all_redis[9]) == 0:
+            today_avg_time_played = -1
+        else:
+            today_avg_time_played = int(get_all_redis[9]) / int(get_all_redis[5])
 
-    if get_all_redis[10] is None:
-        today_min_time_played = -1
-    else:
-        today_min_time_played = int(get_all_redis[10])
+        if get_all_redis[10] is None:
+            today_min_time_played = -1
+        else:
+            today_min_time_played = int(get_all_redis[10])
 
-    if session.get('won_status',0) == 1:
-        if session.get('time_played',0) == today_min_time_played:
-            best_time = True
+        if session.get('won_status',0) == 1:
+            if session.get('time_played',0) == today_min_time_played:
+                best_time = True
 
-    return jsonify({
-        'total_games': int(get_all_redis[0]),
-        'total_wins': int(get_all_redis[1]),
-        'total_losses': int(get_all_redis[2]),
-        'total_guesses': int(get_all_redis[3]),
-        'total_time_played': int(get_all_redis[4]),
-        'total_avg_time_played': total_avg_time_played,
-        'today_games': int(get_all_redis[5]),
-        'today_wins': int(get_all_redis[6]),
-        'today_losses': int(get_all_redis[7]),
-        'today_guesses': int(get_all_redis[8]),
-        'today_time_played': int(get_all_redis[9]),
-        'today_avg_time_played': today_avg_time_played,
-        'today_min_time_played': today_min_time_played,
-        'today_best_time': best_time
-    })
+        return jsonify({
+            'total_games': int(get_all_redis[0]),
+            'total_wins': int(get_all_redis[1]),
+            'total_losses': int(get_all_redis[2]),
+            'total_guesses': int(get_all_redis[3]),
+            'total_time_played': int(get_all_redis[4]),
+            'total_avg_time_played': total_avg_time_played,
+            'today_games': int(get_all_redis[5]),
+            'today_wins': int(get_all_redis[6]),
+            'today_losses': int(get_all_redis[7]),
+            'today_guesses': int(get_all_redis[8]),
+            'today_time_played': int(get_all_redis[9]),
+            'today_avg_time_played': today_avg_time_played,
+            'today_min_time_played': today_min_time_played,
+            'today_best_time': best_time
+        })
+    except Exception as e:
+        print("Problem getting stats from redis")
+        print(e)
+        return jsonify({'total_games': 0,
+                        'total_wins': 0,
+                        'total_losses': 0,
+                        'total_guesses': 0,
+                        'total_time_played': 0,
+                        'total_avg_time_played': -1,
+                        'today_games': 0,
+                        'today_wins': 0,
+                        'today_losses': 0,
+                        'today_guesses': 0,
+                        'today_time_played': 0,
+                        'today_avg_time_played': -1,
+                        'today_min_time_played': -1,
+                        'today_best_time': False
+                        })
 
 
-def set_today_stats(today_seed,
+def set_redis_stats(today_seed,
                     game_status,
                     total_guesses,
                     time_played):
     try:
-        print("Setting total stats")
+        # print("Setting redis stats")
 
-        today_seed_redis, today_min_time_played = redis_connector.mget(['today_seed','today_min_time_played'])
+        today_seed_redis, today_min_time_played = redis_connector.mget([f'{NUMBLE_ENV_VAR}_today_seed',
+                                                                        f'{NUMBLE_ENV_VAR}_today_min_time_played'])
 
         today_seed_redis = today_seed_redis.decode('utf-8')
 
@@ -88,30 +123,26 @@ def set_today_stats(today_seed,
             today_min_time_played = -1
 
         with redis_connector.pipeline() as pipe:
-            pipe.incr('total_games')
-            pipe.incr('total_wins') if game_status == 1 else pipe.incr('total_losses')
-            pipe.incr('total_guesses', total_guesses)
-            pipe.incr('total_time_played', time_played)
+            pipe.incr(f'{NUMBLE_ENV_VAR}_total_games')
+            pipe.incr(f'{NUMBLE_ENV_VAR}_total_wins') if game_status == 1 else pipe.incr(f'{NUMBLE_ENV_VAR}_total_losses')
+            pipe.incr(f'{NUMBLE_ENV_VAR}_total_guesses', total_guesses)
+            pipe.incr(f'{NUMBLE_ENV_VAR}_total_time_played', time_played)
 
             if today_seed_redis == today_seed:
                 print("Setting today stats")
-                pipe.incr('today_games')
-                pipe.incr('today_wins') if game_status == 1 else pipe.incr('today_losses')
-                pipe.incr('today_guesses', total_guesses)
-                pipe.incr('today_time_played', time_played)
-
-                print(time_played)
-                print(today_min_time_played)
-                print("HELLO")
+                pipe.incr(f'{NUMBLE_ENV_VAR}_today_games')
+                pipe.incr(f'{NUMBLE_ENV_VAR}_today_wins') if game_status == 1 else pipe.incr(f'{NUMBLE_ENV_VAR}_today_losses')
+                pipe.incr(f'{NUMBLE_ENV_VAR}_today_guesses', total_guesses)
+                pipe.incr(f'{NUMBLE_ENV_VAR}_today_time_played', time_played)
 
                 if today_min_time_played==-1 or time_played <= today_min_time_played:
-                    pipe.set('today_min_time_played', time_played)
+                    pipe.set(f'{NUMBLE_ENV_VAR}_today_min_time_played', time_played)
                     
             pipe.execute()
     except Exception as e:
         print("Problem setting stats for redis")
-        raise e
-        pass
+        print(e)
+        
 
 
 def next_word_time():
@@ -120,7 +151,7 @@ def next_word_time():
 
 def initialise_redis_seed(seed):
     try:
-        today_seed_redis = redis_connector.get('today_seed')
+        today_seed_redis = redis_connector.get(f'{NUMBLE_ENV_VAR}_today_seed')
 
         if today_seed_redis is not None:
             today_seed_redis = today_seed_redis.decode('utf-8')
@@ -133,13 +164,13 @@ def initialise_redis_seed(seed):
             print("Initialising redis for today seed")
 
             redis_connector.mset({
-                'today_seed': seed,
-                'today_games': 0,
-                'today_wins': 0,
-                'today_losses': 0,
-                'today_guesses': 0,
-                'today_time_played': 0,
-                'today_min_time_played': -1
+                f'{NUMBLE_ENV_VAR}_today_seed': seed,
+                f'{NUMBLE_ENV_VAR}_today_games': 0,
+                f'{NUMBLE_ENV_VAR}_today_wins': 0,
+                f'{NUMBLE_ENV_VAR}_today_losses': 0,
+                f'{NUMBLE_ENV_VAR}_today_guesses': 0,
+                f'{NUMBLE_ENV_VAR}_today_time_played': 0,
+                f'{NUMBLE_ENV_VAR}_today_min_time_played': -1
             })
 
     except:
@@ -278,7 +309,7 @@ def add_score(sc_int):
 
 @app.route('/reset')
 def test_session():
-    if os.getenv('ENV')=='local':
+    if os.getenv('NUMBLE_ENV')=='local':
         print("Resetting session")
         session.clear()
         return redirect('/')
@@ -493,7 +524,7 @@ def submit():
                     session['avg_time_played'] = (session['avg_time_played']*(total_won-1) + session['time_played'])/(total_won)
 
                 # Game Win Stats
-                set_today_stats(today_seed = session["today_seed"],
+                set_redis_stats(today_seed = session["today_seed"],
                                 game_status=1,
                                 total_guesses=session['total_guesses'],
                                 time_played=session['time_played']
@@ -509,7 +540,7 @@ def submit():
                 add_score(-1)
 
                 # Game Lose Stats
-                set_today_stats(today_seed = session["today_seed"],
+                set_redis_stats(today_seed = session["today_seed"],
                                 game_status=0,
                                 total_guesses=session['total_guesses'],
                                 time_played=session['time_played']
