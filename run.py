@@ -21,10 +21,14 @@ numble_score_distribution = {}
 char_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '+', '-', '/', '*']
 
 # Connect to Redis
-url = urllib.parse.urlparse(os.environ.get('REDISCLOUD_URL'))
-redis_connector = redis.Redis(host=url.hostname,
-                              port=url.port,
-                              password=url.password)
+try:
+    url = urllib.parse.urlparse(os.environ.get('REDISCLOUD_URL'))
+    redis_connector = redis.Redis(host=url.hostname,
+                                port=url.port,
+                                password=url.password)
+except:
+    print("Problem connecting to redis")
+    redis_connector = None
 
 NUMBLE_ENV_VAR = os.getenv('NUMBLE_ENV', 'local')
 
@@ -157,9 +161,10 @@ def initialise_redis_seed(seed):
                 f'{NUMBLE_ENV_VAR}_today_min_time_played_win': -1
             })
 
-    except:
+    except Exception as e:
         print("Problem initialising redis seed")
-        pass
+        print(e)
+        
 
 def generator():
     seed = session['today_seed']
