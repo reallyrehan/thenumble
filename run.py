@@ -7,7 +7,7 @@ import os
 from dotenv import load_dotenv
 import urllib.parse
 import redis
-from threading import Thread
+# from threading import Thread
 
 load_dotenv()
 
