@@ -350,18 +350,23 @@
                                         <small>Win %</small>
                                     </div>
                                     <br><br>
-                                    <div class="col-6 text-center" style="margin-top:-10px">
-                                        <small>Avg. Win Time : </small>
-                                        
+                                    <div class="col-4 text-center" style="margin-top:-10px">
+                                        <small>Avg. Guesses</small>
                                     </div>
-                                    <div class="col-6 text-center" style="margin-top:-10px">                                        
-                                        <small>Best Time : </small>
+                                    <div class="col-4 text-center" style="margin-top:-10px">
+                                        <small>Avg. Win Time</small>
                                     </div>
-                                    <div class="col-6 text-center" >
+                                    <div class="col-4 text-center" style="margin-top:-10px">                                        
+                                        <small>Best Time</small>
+                                    </div>
+                                    <div class="col-4 text-center" >
+                                        <b id="overall_avg_guess">?</b>
+                                    </div>
+                                    <div class="col-4 text-center" >
                                         <b id="overall_avg_time_played_span">?</b>
                                         
                                     </div>
-                                    <div class="col-6 text-center" >
+                                    <div class="col-4 text-center" >
                                         <b id="overall_min_time_played_span">?</b>
                                     </div>
 
@@ -821,19 +826,22 @@
             document.getElementById('overall_score_won').innerHTML = response['today_wins'];
             document.getElementById('overall_score_percent').innerHTML = ((response['today_wins']/response['today_games'])*100).toFixed(0);
 
-            if (response['today_avg_time_played'] != -1){
-                document.getElementById('overall_avg_time_played_span').innerHTML = convertTimeToMinutes(response['today_avg_time_played']);
+            if (response['today_wins'] > 0){
+                // Get the average number of guesses
+                let calc_avg = (response['today_guesses_win']/response['today_wins']).toFixed(1);
+                document.getElementById('overall_avg_guess').innerHTML = calc_avg;
 
-            }
-            if (response['today_min_time_played'] != -1){
-                txt =  convertTimeToMinutes(response['today_min_time_played']);
+                // Get the average time played
+                document.getElementById('overall_avg_time_played_span').innerHTML = convertTimeToMinutes(response['today_time_played_win']/response['today_wins']);
+
+                txt =  convertTimeToMinutes(response['today_min_time_played_win']);
 
                 if (response['today_best_time']){
                     txt+= ' <span class="badge badge-success">YOU</span>';
                 }
                 document.getElementById('overall_min_time_played_span').innerHTML = txt;
-
             }
+
             // document.getElementById('today_avg_time').innerHTML = response['today_avg_time'];
 
         }})};

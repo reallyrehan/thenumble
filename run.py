@@ -37,70 +37,45 @@ def get_redis_stats():
 
     try:
         best_time = False
+        today_games, today_wins, today_losses, today_guesses_win, today_time_played_win, today_time_played_loss, today_min_time_played_win = redis_connector.mget([
+            f'{NUMBLE_ENV_VAR}_today_games',
+            f'{NUMBLE_ENV_VAR}_today_wins',
+            f'{NUMBLE_ENV_VAR}_today_losses',
+            f'{NUMBLE_ENV_VAR}_today_guesses_win',
+            f'{NUMBLE_ENV_VAR}_today_time_played_win',
+            f'{NUMBLE_ENV_VAR}_today_time_played_loss',
+            f'{NUMBLE_ENV_VAR}_today_min_time_played_win'
+        ])
 
-        get_all_redis = redis_connector.mget([f'{NUMBLE_ENV_VAR}_total_games',
-                                            f'{NUMBLE_ENV_VAR}_total_wins',
-                                            f'{NUMBLE_ENV_VAR}_total_losses',
-                                            f'{NUMBLE_ENV_VAR}_total_guesses',
-                                            f'{NUMBLE_ENV_VAR}_total_time_played',
-                                            f'{NUMBLE_ENV_VAR}_today_games',
-                                            f'{NUMBLE_ENV_VAR}_today_wins',
-                                            f'{NUMBLE_ENV_VAR}_today_losses',
-                                            f'{NUMBLE_ENV_VAR}_today_guesses',
-                                            f'{NUMBLE_ENV_VAR}_today_time_played',
-                                            f'{NUMBLE_ENV_VAR}_today_min_time_played'])
-        
-        if int(get_all_redis[4]) == 0:
-            total_avg_time_played = -1
-        else:
-            total_avg_time_played = int(get_all_redis[4]) / int(get_all_redis[0])
-
-        if int(get_all_redis[9]) == 0:
-            today_avg_time_played = -1
-        else:
-            today_avg_time_played = int(get_all_redis[9]) / int(get_all_redis[5])
-
-        if get_all_redis[10] is None:
-            today_min_time_played = -1
-        else:
-            today_min_time_played = int(get_all_redis[10])
-
-        if session.get('won_status',0) == 1:
-            if session.get('time_played',0) == today_min_time_played:
+        if today_min_time_played_win:
+            today_min_time_played_win = int(today_min_time_played_win)
+            if session.get('won_status',0) == 1 and session.get('time_played',0) == today_min_time_played_win:
                 best_time = True
+        else:
+            today_min_time_played_win = -1
 
         return jsonify({
-            'total_games': int(get_all_redis[0]),
-            'total_wins': int(get_all_redis[1]),
-            'total_losses': int(get_all_redis[2]),
-            'total_guesses': int(get_all_redis[3]),
-            'total_time_played': int(get_all_redis[4]),
-            'total_avg_time_played': total_avg_time_played,
-            'today_games': int(get_all_redis[5]),
-            'today_wins': int(get_all_redis[6]),
-            'today_losses': int(get_all_redis[7]),
-            'today_guesses': int(get_all_redis[8]),
-            'today_time_played': int(get_all_redis[9]),
-            'today_avg_time_played': today_avg_time_played,
-            'today_min_time_played': today_min_time_played,
-            'today_best_time': best_time
+            'today_games': int(today_games),
+            'today_wins': int(today_wins),
+            'today_losses': int(today_losses),
+            'today_guesses_win': int(today_guesses_win),
+            'today_time_played_win': int(today_time_played_win),
+            'today_time_played_loss': int(today_time_played_loss),
+            'today_min_time_played_win': today_min_time_played_win,
+            'today_best_time': best_time,
         })
+
+
     except Exception as e:
         print("Problem getting stats from redis")
         print(e)
-        return jsonify({'total_games': 0,
-                        'total_wins': 0,
-                        'total_losses': 0,
-                        'total_guesses': 0,
-                        'total_time_played': 0,
-                        'total_avg_time_played': -1,
-                        'today_games': 0,
+        return jsonify({'today_games': 0,
                         'today_wins': 0,
                         'today_losses': 0,
-                        'today_guesses': 0,
-                        'today_time_played': 0,
-                        'today_avg_time_played': -1,
-                        'today_min_time_played': -1,
+                        'today_guesses_win': 0,
+                        'today_time_played_win': 0,
+                        'today_time_played_loss': 0,
+                        'today_min_time_played_win': -1,
                         'today_best_time': False
                         })
 
@@ -113,7 +88,7 @@ def set_redis_stats(today_seed,
         # print("Setting redis stats")
 
         today_seed_redis, today_min_time_played = redis_connector.mget([f'{NUMBLE_ENV_VAR}_today_seed',
-                                                                        f'{NUMBLE_ENV_VAR}_today_min_time_played'])
+                                                                        f'{NUMBLE_ENV_VAR}_today_min_time_played_win'])
 
         today_seed_redis = today_seed_redis.decode('utf-8')
 
@@ -124,19 +99,27 @@ def set_redis_stats(today_seed,
 
         with redis_connector.pipeline() as pipe:
             pipe.incr(f'{NUMBLE_ENV_VAR}_total_games')
-            pipe.incr(f'{NUMBLE_ENV_VAR}_total_wins') if game_status == 1 else pipe.incr(f'{NUMBLE_ENV_VAR}_total_losses')
-            pipe.incr(f'{NUMBLE_ENV_VAR}_total_guesses', total_guesses)
-            pipe.incr(f'{NUMBLE_ENV_VAR}_total_time_played', time_played)
+
+            if game_status == 1:
+                pipe.incr(f'{NUMBLE_ENV_VAR}_total_wins')
+                pipe.incr(f'{NUMBLE_ENV_VAR}_total_guesses_win', total_guesses)
+                pipe.incr(f'{NUMBLE_ENV_VAR}_total_time_played_win', time_played)
+            else:
+                pipe.incr(f'{NUMBLE_ENV_VAR}_total_losses')
+                pipe.incr(f'{NUMBLE_ENV_VAR}_total_time_played_loss', time_played)
 
             if today_seed_redis == today_seed:
-                print("Setting today stats")
                 pipe.incr(f'{NUMBLE_ENV_VAR}_today_games')
-                pipe.incr(f'{NUMBLE_ENV_VAR}_today_wins') if game_status == 1 else pipe.incr(f'{NUMBLE_ENV_VAR}_today_losses')
-                pipe.incr(f'{NUMBLE_ENV_VAR}_today_guesses', total_guesses)
-                pipe.incr(f'{NUMBLE_ENV_VAR}_today_time_played', time_played)
+                if game_status == 1:
+                    pipe.incr(f'{NUMBLE_ENV_VAR}_today_wins')
+                    pipe.incr(f'{NUMBLE_ENV_VAR}_today_guesses_win', total_guesses)
+                    pipe.incr(f'{NUMBLE_ENV_VAR}_today_time_played_win', time_played)
 
-                if today_min_time_played==-1 or time_played <= today_min_time_played:
-                    pipe.set(f'{NUMBLE_ENV_VAR}_today_min_time_played', time_played)
+                    if today_min_time_played==-1 or time_played <= today_min_time_played:
+                        pipe.set(f'{NUMBLE_ENV_VAR}_today_min_time_played_win', time_played)
+                else:
+                    pipe.incr(f'{NUMBLE_ENV_VAR}_today_losses')
+                    pipe.incr(f'{NUMBLE_ENV_VAR}_today_time_played_loss', time_played)
                     
             pipe.execute()
     except Exception as e:
@@ -168,9 +151,10 @@ def initialise_redis_seed(seed):
                 f'{NUMBLE_ENV_VAR}_today_games': 0,
                 f'{NUMBLE_ENV_VAR}_today_wins': 0,
                 f'{NUMBLE_ENV_VAR}_today_losses': 0,
-                f'{NUMBLE_ENV_VAR}_today_guesses': 0,
-                f'{NUMBLE_ENV_VAR}_today_time_played': 0,
-                f'{NUMBLE_ENV_VAR}_today_min_time_played': -1
+                f'{NUMBLE_ENV_VAR}_today_guesses_win': 0,
+                f'{NUMBLE_ENV_VAR}_today_time_played_win': 0,
+                f'{NUMBLE_ENV_VAR}_today_time_played_loss': 0,
+                f'{NUMBLE_ENV_VAR}_today_min_time_played_win': -1
             })
 
     except:
@@ -275,7 +259,7 @@ def get_seed():
     month = month if len(month) == 2 else '0' + month
     day = day if len(day) == 2 else '0' + day
 
-    return year + month + day #+ str(round(today.second/15)) ## Testing
+    return year + month + day #str(round(today.second/15)) ## Testing
 
 
 def get_day_count():
