@@ -124,6 +124,12 @@ def set_redis_stats(today_seed,
                 else:
                     pipe.incr(f'{NUMBLE_ENV_VAR}_today_losses')
                     pipe.incr(f'{NUMBLE_ENV_VAR}_today_time_played_loss', time_played)
+
+            else:
+                # Generate latest seed
+                check_seed = get_seed()
+                if check_seed != today_seed_redis:
+                    initialise_redis_seed(check_seed)
                     
             pipe.execute()
     except Exception as e:
