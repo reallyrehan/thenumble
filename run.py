@@ -112,7 +112,24 @@ def set_redis_stats(today_seed,
                 pipe.incr(f'{NUMBLE_ENV_VAR}_total_losses')
                 pipe.incr(f'{NUMBLE_ENV_VAR}_total_time_played_loss', time_played)
 
-            if today_seed_redis == today_seed:
+            # Check if currently played game seed is same as redis seed
+            update_today_stats = (today_seed_redis == today_seed)
+
+            if not update_today_stats:
+                check_seed = get_seed()
+
+                # If not, check if redis seed is outdated
+                if check_seed != today_seed_redis:
+
+                    # If outdated, initialise redis seed
+                    initialise_redis_seed(check_seed)
+
+                    # Check if currently played game seed is same as newly initialised seed
+
+                    # If yes, update today stats, else the game seed is outdated
+                    update_today_stats = (check_seed == today_seed)
+
+            if update_today_stats:
                 pipe.incr(f'{NUMBLE_ENV_VAR}_today_games')
                 if game_status == 1:
                     pipe.incr(f'{NUMBLE_ENV_VAR}_today_wins')
@@ -124,6 +141,7 @@ def set_redis_stats(today_seed,
                 else:
                     pipe.incr(f'{NUMBLE_ENV_VAR}_today_losses')
                     pipe.incr(f'{NUMBLE_ENV_VAR}_today_time_played_loss', time_played)
+
                     
             pipe.execute()
     except Exception as e:
