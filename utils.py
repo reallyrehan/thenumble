@@ -47,7 +47,5 @@ def new_equation_generator(seed):
             continue
         else:
             break
-
-    print(final_true, eval_result)
     
     return final_true, eval_result
