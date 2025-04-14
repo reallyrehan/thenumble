@@ -83,7 +83,6 @@ def get_redis_stats():
                         'today_best_time': False
                         })
 
-
 def set_redis_stats(today_seed,
                     game_status,
                     total_guesses,
@@ -176,7 +175,8 @@ def initialise_redis_seed(seed):
                 f'{NUMBLE_ENV_VAR}_today_guesses_win': 0,
                 f'{NUMBLE_ENV_VAR}_today_time_played_win': 0,
                 f'{NUMBLE_ENV_VAR}_today_time_played_loss': 0,
-                f'{NUMBLE_ENV_VAR}_today_min_time_played_win': -1
+                f'{NUMBLE_ENV_VAR}_today_min_time_played_win': -1,
+                f'{NUMBLE_ENV_VAR}_today_players': 0
             })
 
     except Exception as e:
@@ -282,7 +282,7 @@ def get_seed():
     month = month if len(month) == 2 else '0' + month
     day = day if len(day) == 2 else '0' + day
 
-    return year + month + day #str(round(today.second/15)) ## Testing
+    return year + month + day #+str(round(today.second/15)) ## Testing
 
 
 def get_day_count():
@@ -325,6 +325,12 @@ def test_session():
         return redirect('/')
 
 def initialize_session(seed, new_session=True):
+    if session.get('today_seed', '') != seed:
+        try:
+            redis_connector.incr(f'{NUMBLE_ENV_VAR}_today_players')
+        except:
+            print("Problem incrementing today players")
+
     if 'last_played' in session and session['last_played'] == seed:
         new_session = False
 
@@ -392,6 +398,11 @@ def index_seed(var=""):
     print("Answer: " + str(get_truth_value()))
     print("Total guesses: " + str(session['total_guesses']))
 
+    try:
+        today_players = int(redis_connector.get(f'{NUMBLE_ENV_VAR}_today_players'))
+    except:
+        today_players = -1
+
     return render_template('index.html',
                            answer_value=get_truth_ans(),
                            total=session['total_guesses'],
@@ -399,6 +410,7 @@ def index_seed(var=""):
                            labels=get_guesses(),
                            won_status=session["won_status"],
                            numble_day_count="#mynumble: " + var,
+                           numble_player_count=today_players,
                            global_remaining_time=next_word_time(),
                            dark_mode=session['dark_mode'],
                            time_played=session['time_played'],
@@ -435,6 +447,13 @@ def index():
 
     print(session['start_time'])
 
+    try:
+        today_players = int(redis_connector.get(f'{NUMBLE_ENV_VAR}_today_players'))
+    except:
+        today_players = -1
+
+
+
     return render_template('index.html',
                            answer_value=get_truth_ans(),
                            total=session['total_guesses'],
@@ -442,6 +461,7 @@ def index():
                            labels=get_guesses(),
                            won_status=session["won_status"],
                            numble_day_count="# " + str(get_day_count()),
+                           numble_player_count=today_players,
                            global_remaining_time=next_word_time(),
                            dark_mode=session['dark_mode'],
                            time_played=session['time_played'],
