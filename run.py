@@ -405,6 +405,9 @@ def index_seed(var=""):
                            avg_time_played=-1,
                            start_time=session['start_time'])
 
+@app.route('/ads.txt')
+def ads_txt():
+    return redirect('https://srv.adstxtmanager.com/19390/thenumble.app')
 
 @app.route('/')
 def index():
