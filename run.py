@@ -323,6 +323,10 @@ def test_session():
     else:
         print("Not allowed")
         return redirect('/')
+    
+@app.route('/ads.txt')
+def ads_txt():
+    return redirect('https://srv.adstxtmanager.com/19390/thenumble.app')
 
 def initialize_session(seed, new_session=True):
     if 'last_played' in session and session['last_played'] == seed:
@@ -404,10 +408,6 @@ def index_seed(var=""):
                            time_played=session['time_played'],
                            avg_time_played=-1,
                            start_time=session['start_time'])
-
-@app.route('/ads.txt')
-def ads_txt():
-    return redirect('https://srv.adstxtmanager.com/19390/thenumble.app')
 
 @app.route('/')
 def index():
