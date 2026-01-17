@@ -113,3 +113,9 @@ animation-iteration-count: 0.25;
     border-color:rgb(35, 35, 35);
     /* color:white; */
 }
+/* Custom position for Ezoic Icon */
+#ezPrivacyCenter{
+    bottom: 20px !important;
+    right: 20px !important;
+    left: auto !important;
+}
