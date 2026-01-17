@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Numble - A Daily Math Game</title>
+    <meta name="description" content="Numble is a game like Wordle, but for math nerds. You guess an equation in 6 guesses or less, with a new equation every day!">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/light.css" id="theme-stylesheet">
+    
+    <!-- Ezoic Consent Manager -->
+    <script src="https://cmp.gatekeeperconsent.com/min.js" data-cfasync="false"></script>
+    <script src="https://the.gatekeeperconsent.com/cmp.min.js" data-cfasync="false"></script>
+
+    <!-- Ezoic Standalone -->
+    <script async src="//www.ezojs.com/ezoic/sa.min.js"></script>
+    <script>
+        window.ezstandalone = window.ezstandalone || {};
+        ezstandalone.cmd = ezstandalone.cmd || [];
+    </script>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-219109845-1"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-219109845-1');
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-G4SBFVMDC0"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-G4SBFVMDC0');
+    </script>
+    
+    <style>
+        .shake {
+            animation: shake 0.7s;
+            animation-iteration-count: 1;
+        }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(-1deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Info Modal -->
+    <div id="infoModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">How to Play Numble?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size: 0.8rem;">You get 6 tries to guess the hidden equation! <br>You get one hint, the value!<br>All your guesses need to equate to the value to be accepted.</p>
+                    
+                    <div class="row mt-2 ml-2 mb-2">
+                        <button class="box3 btn btn-success">2</button>
+                        <button class="box3 btn btn-dark">+</button>
+                        <button class="box3 btn btn-dark">3</button>
+                        <button class="box3 btn btn-dark">-</button>
+                        <button class="box3 btn btn-dark">0</button>
+                        <button class="box3 btn btn-dark">*</button>
+                        <button class="box3 btn btn-dark">1</button>
+                        <div>
+                            <button class="box3 btn"> = </button>
+                            <button class="box3 btn">5</button>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.8rem;">The number 2 is in the correct place!</p>
+
+                    <div class="row mt-2 ml-2 mb-2">
+                        <button class="box3 btn btn-dark">3</button>
+                        <button class="box3 btn btn-dark">*</button>
+                        <button class="box3 btn btn-dark">2</button>
+                        <button class="box3 btn btn-dark">/</button>
+                        <button class="box3 btn btn-dark">1</button>
+                        <button class="box3 btn btn-warning">+</button>
+                        <button class="box3 btn btn-dark">0</button>
+                        <div>
+                            <button class="box3 btn"> = </button>
+                            <button class="box3 btn">6</button>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.8rem;">The addition sign "+" exists in the equation but in a different place.</p>
+
+                    <div class="row mt-2 ml-2 mb-2">
+                        <button class="box3 btn btn-success">2</button>
+                        <button class="box3 btn btn-success">*</button>
+                        <button class="box3 btn btn-success">5</button>
+                        <button class="box3 btn btn-success">-</button>
+                        <button class="box3 btn btn-success">1</button>
+                        <button class="box3 btn btn-dark">/</button>
+                        <button class="box3 btn btn-success">1</button>
+                        <div>
+                            <button class="box3 btn"> = </button>
+                            <button class="box3 btn">9</button>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.8rem;">The division sign "/" does not exist in the equation.</p>
+
+                    <p><b>Rules</b></p>
+                    <ul>
+                        <li style="font-size: 0.8rem;">The equation follows the <b>DMAS</b> order of operations.</li>
+                        <li style="font-size: 0.8rem;">Leading 0s are not allowed e.g. 1 will be accepted but 01 won't be.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div id="statsModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <button type="button" class="close ml-auto mt-2 mr-2" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                
+                <ul class="nav nav-tabs" id="statsTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="daily-stats-tab" data-toggle="tab" href="#daily-stats" role="tab">Your Stats</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="overall-stats-tab" data-toggle="tab" href="#overall-stats" role="tab">Overall</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="statsTabContent">
+                    <div class="tab-pane fade show active" id="daily-stats" role="tabpanel">
+                        <div id="youstats" class="modal-body">
+                            <div class="container">
+                                <div style="display: none;" id="todaystats">
+                                    <div class="row">
+                                        <div class="col-12 text-center">
+                                            <p><span id="your_timeplayed_minutes"></span></p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                                <div class="row ml-4 mr-4">
+                                    <div class="col-12 text-center">
+                                        <h5><b>YOUR STATISTICS</b></h5>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <h1 id="your_score_played">0</h1>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <h1 id="your_score_won">0</h1>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <h1 id="your_score_percent">0</h1>
+                                    </div>
+                                    <div class="col-4 text-center" style="margin-top:-10px">
+                                        <small>Played</small>
+                                    </div>
+                                    <div class="col-4 text-center" style="margin-top:-10px">
+                                        <small>Won</small>
+                                    </div>
+                                    <div class="col-4 text-center" style="margin-top:-10px">
+                                        <small>Win %</small>
+                                    </div>
+                                    <br><br>
+                                    <div class="col-12 text-center" style="margin-top:-10px">
+                                        <small>Avg. Win Time : </small><b id="avg_time_played_span">?</b>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="col-12 text-center">
+                                    <p>Guess Distribution</p>
+                                </div>
+                            </div>
+                            <table>
+                                <tr>
+                                    <td>1</td>
+                                    <td><button id="your_guess_1" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td><button id="your_guess_2" class="btn btn-secondary ml-4" style="padding-left:12px;border-radius: 0;">0</button></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td><button id="your_guess_3" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button></td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td><button id="your_guess_4" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button></td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td><button id="your_guess_5" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button></td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td><button id="your_guess_6" class="btn btn-secondary ml-4" style="padding-left:12px; border-radius: 0;">0</button></td>
+                                </tr>
+                                <tr style="display: none;">
+                                    <td>X</td>
+                                    <td><button id="your_guess_7" class="btn btn-secondary ml-4" style="padding-left:12px;border-radius: 0;">0</button></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="overall-stats" role="tabpanel" aria-labelledby="overall-stats-tab">
+                        <div class="modal-body">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-12 text-center" style="padding: 3rem 2rem;">
+                                        <h5><b>Overall Statistics</b></h5>
+                                        <hr>
+                                        <div style="margin-top: 2rem;">
+                                            <p style="font-size: 1rem; color: #666;">
+                                                <strong>Feature Unavailable</strong>
+                                            </p>
+                                            <p style="font-size: 0.9rem; color: #888; margin-top: 1rem;">
+                                                Global statistics (showing how all players performed today) are not available in this client-only version of Numble.
+                                            </p>
+                                            <p style="font-size: 0.85rem; color: #999; margin-top: 1rem;">
+                                                This feature requires a server to aggregate data from all users. Your personal statistics are still tracked and available in the "Your Stats" tab.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="head mt-2">
+        <h1 class="d-flex justify-content-center" style="font-size:2.5rem;margin-bottom:0;">
+            <button class="btn" id="info">ⓘ</button>&nbsp;&nbsp;&nbsp;NUMBLE&nbsp;
+            <button class="btn" id="statsButton">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="grey" height="24" viewBox="0 0 24 24" width="24">
+                    <path d="M16,11V3H8v6H2v12h20V11H16z M10,5h4v14h-4V5z M4,11h4v8H4V11z M20,19h-4v-6h4V19z"></path>
+                </svg>
+            </button>
+            <button class="btn btn-lg" id="darkModeToggle">☽</button>
+        </h1>
+        <small style="font-size:0.8rem;" id="notif"># 0</small>
+        <hr style="width: 15rem;margin-top:5px;margin-bottom:5px;">
+    </div>
+
+    <!-- Game Board -->
+    <div class="container d-flex justify-content-center">
+        <div class="boxes">
+            <div class="row mt-2" id="row-0">
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <div id="a_0">
+                    <button class="box btn"> = </button>
+                    <button class="box btn" id="answer-value">0</button>
+                </div>
+            </div>
+            <div class="row mt-2" id="row-1">
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <div id="a_1" style="display: none;">
+                    <button class="box btn"> = </button>
+                    <button class="box btn" id="answer-value-1">0</button>
+                </div>
+            </div>
+            <div class="row mt-2" id="row-2">
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <div id="a_2" style="display: none;">
+                    <button class="box btn"> = </button>
+                    <button class="box btn" id="answer-value-2">0</button>
+                </div>
+            </div>
+            <div class="row mt-2" id="row-3">
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <div id="a_3" style="display: none;">
+                    <button class="box btn"> = </button>
+                    <button class="box btn" id="answer-value-3">0</button>
+                </div>
+            </div>
+            <div class="row mt-2" id="row-4">
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <div id="a_4" style="display: none;">
+                    <button class="box btn"> = </button>
+                    <button class="box btn" id="answer-value-4">0</button>
+                </div>
+            </div>
+            <div class="row mt-2" id="row-5">
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <button class="box btn btn-outline-secondary">&nbsp;</button>
+                <div id="a_5" style="display: none;">
+                    <button class="box btn"> = </button>
+                    <button class="box btn" id="answer-value-5">0</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Answer Display -->
+    <div class="container d-flex justify-content-center">
+        <div class="row mt-2">
+            <div id="a_mobile" style="display: none;font-size:3rem;"> = 0</div>
+        </div>
+    </div>
+
+    <!-- Keyboard -->
+    <div class="container" id="keyboard" style="margin-top:2rem;">
+        <div class="row fluid">
+            <div class="col-sm-12 d-flex justify-content-center">
+                <div>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_1">1</button>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_2">2</button>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_3">3</button>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_4">4</button>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_5">5</button>
+                </div>
+            </div>
+            <div class="col-sm-12 d-flex justify-content-center">
+                <div>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_6">6</button>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_7">7</button>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_8">8</button>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_9">9</button>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_0">0</button>
+                </div>
+            </div>
+            <div class="col-sm-12 d-flex justify-content-center">
+                <div>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_plus">+</button>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_minus">-</button>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_divide">/</button>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_multiply">*</button>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" id="b_back">⌫</button>
+                </div>
+            </div>
+            <div class="col-sm-12 d-flex justify-content-center">
+                <div>
+                    <button class="box2 mt-2 ml-2 btn btn-secondary" style="width:10rem; height:2rem;font-size:1rem" id="b_enter">Enter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row text-center">
+                <div class="col-lg-12 ml-3">
+                    <small>Created by <a href="https://github.com/reallyrehan" target="_blank">Rehan Ahmed</a></small>
+                </div>
+                <div class="col-lg-12 ml-3">
+                    <div class="container d-flex justify-content-center" style="margin-bottom:2rem;">
+                        <a href="privacy.html">Privacy Policy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Ezoic Ad Placeholder -->
+    <div id="ezoic-pub-ad-placeholder-103"></div>
+    <script>
+        ezstandalone.cmd.push(function() {
+            ezstandalone.showAds(103);
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    <script src="js/gameLogic.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
