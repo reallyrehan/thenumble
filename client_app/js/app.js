@@ -202,6 +202,7 @@ function handleKeyPress(e) {
 
     if (keyCodes.includes(e.key)) {
         if (curCount < 7) {
+            startTimer();
             const boxIndex = (session.totalGuesses * 9) + curCount;
             $('.box').eq(boxIndex).text(e.key);
             curCount++;

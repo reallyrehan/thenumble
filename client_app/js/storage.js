@@ -35,15 +35,15 @@ function initializeSession(seed, isCustomSeed = false) {
         localStorage.setItem(STORAGE_KEYS.TOTAL_GUESSES, '0');
         localStorage.setItem(STORAGE_KEYS.GUESS_HISTORY, JSON.stringify([]));
         localStorage.setItem(STORAGE_KEYS.WON_STATUS, '0');
-        localStorage.setItem(STORAGE_KEYS.START_TIME, String(Math.floor(Date.now() / 1000)));
+        localStorage.setItem(STORAGE_KEYS.START_TIME, '0');
         localStorage.setItem(STORAGE_KEYS.TIME_PLAYED, '-1');
         localStorage.setItem(STORAGE_KEYS.CURRENT_INPUT, '');
         localStorage.setItem(STORAGE_KEYS.CURRENT_COUNT, '0');
     } else {
         // Same day - preserve start time if it exists, otherwise set it
         const existingStartTime = localStorage.getItem(STORAGE_KEYS.START_TIME);
-        if (!existingStartTime || existingStartTime === '0') {
-            localStorage.setItem(STORAGE_KEYS.START_TIME, String(Math.floor(Date.now() / 1000)));
+        if (!existingStartTime) {
+            localStorage.setItem(STORAGE_KEYS.START_TIME, '0');
         }
     }
 
@@ -104,6 +104,16 @@ function updateSession(updates) {
     }
     if (updates.currentCount !== undefined) {
         localStorage.setItem(STORAGE_KEYS.CURRENT_COUNT, String(updates.currentCount));
+    }
+}
+
+/**
+ * Start the timer if it hasn't been started yet
+ */
+function startTimer() {
+    const existingStartTime = localStorage.getItem(STORAGE_KEYS.START_TIME);
+    if (!existingStartTime || existingStartTime === '0') {
+        localStorage.setItem(STORAGE_KEYS.START_TIME, String(Math.floor(Date.now() / 1000)));
     }
 }
 
